@@ -1,4 +1,4 @@
-package com.DBP.ticketing_backend.domain.bookedSeat.entity;
+package com.DBP.ticketing_backend.domain.bookedseat.entity;
 
 import com.DBP.ticketing_backend.domain.booking.entity.Booking;
 import com.DBP.ticketing_backend.domain.seat.entity.Seat;
