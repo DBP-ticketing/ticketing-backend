@@ -6,8 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class TicketingBackendApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(TicketingBackendApplication.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(TicketingBackendApplication.class, args);
+    }
 }

@@ -6,6 +6,7 @@ import com.DBP.ticketing_backend.domain.event.enums.SeatForm;
 import com.DBP.ticketing_backend.domain.host.entity.Host;
 import com.DBP.ticketing_backend.domain.place.entity.Place;
 import com.DBP.ticketing_backend.global.common.BaseEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -16,11 +17,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.time.LocalDateTime;
+
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -59,8 +62,14 @@ public class Event extends BaseEntity {
     private EventStatus status;
 
     @Builder
-    public Event(Host host, Place place, String eventName, EventCategory category,
-        LocalDateTime date, SeatForm seatForm, EventStatus status) {
+    public Event(
+            Host host,
+            Place place,
+            String eventName,
+            EventCategory category,
+            LocalDateTime date,
+            SeatForm seatForm,
+            EventStatus status) {
         this.host = host;
         this.place = place;
         this.eventName = eventName;

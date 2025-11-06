@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum SeatLevel {
-
     VIP("VIP석"),
     R("R석"),
     S("S석"),

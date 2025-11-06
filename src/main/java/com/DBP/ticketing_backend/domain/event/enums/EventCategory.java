@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum EventCategory {
-
     CONCERT("콘서트"),
     MUSICAL("뮤지컬"),
     THEATER("연극"),

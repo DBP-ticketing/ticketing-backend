@@ -5,6 +5,7 @@ import com.DBP.ticketing_backend.domain.seat.enums.SeatLevel;
 import com.DBP.ticketing_backend.domain.seat.enums.SeatStatus;
 import com.DBP.ticketing_backend.domain.seattemplate.entity.SeatTemplate;
 import com.DBP.ticketing_backend.global.common.BaseEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -15,6 +16,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -50,8 +52,8 @@ public class Seat extends BaseEntity {
     private SeatStatus status;
 
     @Builder
-    public Seat(Event event, SeatTemplate template, SeatLevel level,
-        Integer price, SeatStatus status) {
+    public Seat(
+            Event event, SeatTemplate template, SeatLevel level, Integer price, SeatStatus status) {
         this.event = event;
         this.template = template;
         this.level = level;

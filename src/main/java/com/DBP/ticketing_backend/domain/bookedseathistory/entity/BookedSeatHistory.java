@@ -3,8 +3,8 @@ package com.DBP.ticketing_backend.domain.bookedseathistory.entity;
 import com.DBP.ticketing_backend.domain.bookedseat.entity.BookedSeat;
 import com.DBP.ticketing_backend.domain.booking.entity.Booking;
 import com.DBP.ticketing_backend.domain.booking.enums.BookingStatus;
-import com.DBP.ticketing_backend.domain.seat.enums.SeatStatus;
 import com.DBP.ticketing_backend.global.common.BaseEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -16,6 +16,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -49,8 +50,11 @@ public class BookedSeatHistory extends BaseEntity {
     private BookingStatus currentStatus;
 
     @Builder
-    public BookedSeatHistory(BookedSeat bookedSeat, Booking booking, BookingStatus previousStatus,
-        BookingStatus currentStatus) {
+    public BookedSeatHistory(
+            BookedSeat bookedSeat,
+            Booking booking,
+            BookingStatus previousStatus,
+            BookingStatus currentStatus) {
         this.bookedSeat = bookedSeat;
         this.booking = booking;
         this.previousStatus = previousStatus;
