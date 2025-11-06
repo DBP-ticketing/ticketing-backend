@@ -29,7 +29,8 @@ public class Event extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "event_id")
+    private Long eventId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "host_id", nullable = false)
@@ -67,25 +68,5 @@ public class Event extends BaseEntity {
         this.date = date;
         this.seatForm = seatForm;
         this.status = status != null ? status : EventStatus.SCHEDULED;
-    }
-
-    public void updateStatus(EventStatus status) {
-        this.status = status;
-    }
-
-    public void openBooking() {
-        this.status = EventStatus.OPEN;
-    }
-
-    public void closeBooking() {
-        this.status = EventStatus.CLOSED;
-    }
-
-    public void cancel() {
-        this.status = EventStatus.CANCELLED;
-    }
-
-    public void complete() {
-        this.status = EventStatus.COMPLETED;
     }
 }

@@ -25,7 +25,8 @@ public class Host extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "host_id")
+    private Long hostId;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
@@ -47,9 +48,5 @@ public class Host extends BaseEntity {
         this.companyName = companyName;
         this.businessNumber = businessNumber;
         this.status = status != null ? status : HostStatus.PENDING;
-    }
-
-    public void approve() {
-        this.status = HostStatus.ACTIVE;
     }
 }

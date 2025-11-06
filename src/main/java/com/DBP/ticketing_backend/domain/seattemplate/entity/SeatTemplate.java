@@ -21,7 +21,8 @@ public class SeatTemplate {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "template_id")
+    private Long templateId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "place_id", nullable = false)
@@ -30,9 +31,10 @@ public class SeatTemplate {
     @Column(nullable = false, length = 10)
     private String section;
 
-    @Column(nullable = false)
+    @Column(name = "seat_row", nullable = false)
     private Integer row;
-    @Column(nullable = false)
+
+    @Column(name = "seat_column", nullable = false)
     private Integer column;
 
     @Builder
