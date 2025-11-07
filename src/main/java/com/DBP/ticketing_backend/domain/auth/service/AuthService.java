@@ -3,6 +3,7 @@ package com.DBP.ticketing_backend.domain.auth.service;
 import com.DBP.ticketing_backend.domain.auth.dto.UsersDetails;
 import com.DBP.ticketing_backend.domain.auth.dto.request.SignUpHostRequestDto;
 import com.DBP.ticketing_backend.domain.auth.dto.request.SignUpUserRequestDto;
+import com.DBP.ticketing_backend.domain.auth.dto.response.LoginResponseDto;
 import com.DBP.ticketing_backend.domain.host.entity.Host;
 import com.DBP.ticketing_backend.domain.host.enums.HostStatus;
 import com.DBP.ticketing_backend.domain.host.repository.HostRepository;
@@ -88,16 +89,20 @@ public class AuthService implements UserDetailsService {
         hostRepository.save(host);
     }
 
-    // 로그인 검증
-    public boolean validateUser(String email, String password) {
-        Optional<Users> userOptional = usersRepository.findByEmail(email);
+    // 로그인
+    public LoginResponseDto login(String email, String password) {
+        Users user = usersRepository.findByEmail(email)
+            .orElseThrow(() -> new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다."));
 
-        if (userOptional.isEmpty()) {
-            return false;
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다.");
         }
 
-        Users user = userOptional.get();
-        return passwordEncoder.matches(password, user.getPassword());
+        return LoginResponseDto.builder()
+            .email(user.getEmail())
+            .name(user.getName())
+            .role(user.getRole().name())
+            .build();
     }
 
     // 로그인 -> Spring Security UserDetailsService 구현

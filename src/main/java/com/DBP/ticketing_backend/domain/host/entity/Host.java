@@ -4,6 +4,7 @@ import com.DBP.ticketing_backend.domain.host.enums.HostStatus;
 import com.DBP.ticketing_backend.domain.users.entity.Users;
 import com.DBP.ticketing_backend.global.common.BaseEntity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -50,5 +51,29 @@ public class Host extends BaseEntity {
         this.companyName = companyName;
         this.businessNumber = businessNumber;
         this.status = status != null ? status : HostStatus.PENDING;
+    }
+
+    public void approve() {
+        this.status = HostStatus.ACTIVE;
+    }
+
+    public void reject() {
+        this.status = HostStatus.REJECTED;
+    }
+
+    public void suspend() {
+        this.status = HostStatus.SUSPENDED;
+    }
+
+    public boolean isActive() {
+        return this.status == HostStatus.ACTIVE;
+    }
+
+    public boolean isPending() {
+        return this.status == HostStatus.PENDING;
+    }
+
+    public boolean isRejected() {
+        return this.status == HostStatus.REJECTED;
     }
 }

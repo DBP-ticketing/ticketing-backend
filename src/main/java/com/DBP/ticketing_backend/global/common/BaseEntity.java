@@ -1,5 +1,6 @@
 package com.DBP.ticketing_backend.global.common;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
@@ -18,8 +19,10 @@ import java.time.LocalDateTime;
 public class BaseEntity {
 
     @CreatedDate
-    @Column(updatable = false)
+    @Column(updatable = false, columnDefinition = "DATETIME(3)")
     private LocalDateTime createdAt;
 
-    @LastModifiedDate private LocalDateTime updatedAt;
+    @LastModifiedDate
+    @Column(columnDefinition = "DATETIME(3)")
+    private LocalDateTime updatedAt;
 }
