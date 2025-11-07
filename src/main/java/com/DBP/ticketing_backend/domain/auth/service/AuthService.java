@@ -9,14 +9,18 @@ import com.DBP.ticketing_backend.domain.host.repository.HostRepository;
 import com.DBP.ticketing_backend.domain.users.entity.Users;
 import com.DBP.ticketing_backend.domain.users.enums.UsersRole;
 import com.DBP.ticketing_backend.domain.users.repository.UsersRepository;
+
 import jakarta.transaction.Transactional;
-import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -28,19 +32,20 @@ public class AuthService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
 
     // User 회원가입
-    public void saveUser(SignUpUserRequestDto  signUpUserRequestDto){
+    public void saveUser(SignUpUserRequestDto signUpUserRequestDto) {
         // 이메일 중복 체크
         if (usersRepository.findByEmail(signUpUserRequestDto.getEmail()).isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
         }
 
-        Users users = Users.builder()
-            .email(signUpUserRequestDto.getEmail())
-            .password(passwordEncoder.encode(signUpUserRequestDto.getPassword()))
-            .name(signUpUserRequestDto.getName())
-            .phoneNumber(signUpUserRequestDto.getPhoneNumber())
-            .role(UsersRole.USER)
-            .build();
+        Users users =
+                Users.builder()
+                        .email(signUpUserRequestDto.getEmail())
+                        .password(passwordEncoder.encode(signUpUserRequestDto.getPassword()))
+                        .name(signUpUserRequestDto.getName())
+                        .phoneNumber(signUpUserRequestDto.getPhoneNumber())
+                        .role(UsersRole.USER)
+                        .build();
 
         usersRepository.save(users);
     }
@@ -53,28 +58,32 @@ public class AuthService implements UserDetailsService {
         }
 
         // 사업자번호 중복 체크
-        if (hostRepository.findByBusinessNumber(signUpHostRequestDto.getBusinessNumber()).isPresent()) {
+        if (hostRepository
+                .findByBusinessNumber(signUpHostRequestDto.getBusinessNumber())
+                .isPresent()) {
             throw new IllegalArgumentException("이미 등록된 사업자번호입니다.");
         }
 
         // User 생성
-        Users users = Users.builder()
-            .email(signUpHostRequestDto.getEmail())
-            .password(passwordEncoder.encode(signUpHostRequestDto.getPassword()))
-            .name(signUpHostRequestDto.getName())
-            .phoneNumber(signUpHostRequestDto.getPhoneNumber())
-            .role(UsersRole.HOST)
-            .build();
+        Users users =
+                Users.builder()
+                        .email(signUpHostRequestDto.getEmail())
+                        .password(passwordEncoder.encode(signUpHostRequestDto.getPassword()))
+                        .name(signUpHostRequestDto.getName())
+                        .phoneNumber(signUpHostRequestDto.getPhoneNumber())
+                        .role(UsersRole.HOST)
+                        .build();
 
         usersRepository.save(users);
 
         // Host 생성
-        Host host = Host.builder()
-            .users(users)
-            .companyName(signUpHostRequestDto.getCompanyName())
-            .businessNumber(signUpHostRequestDto.getBusinessNumber())
-            .status(HostStatus.PENDING)
-            .build();
+        Host host =
+                Host.builder()
+                        .users(users)
+                        .companyName(signUpHostRequestDto.getCompanyName())
+                        .businessNumber(signUpHostRequestDto.getBusinessNumber())
+                        .status(HostStatus.PENDING)
+                        .build();
 
         hostRepository.save(host);
     }
@@ -95,8 +104,9 @@ public class AuthService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<Users> userOptional = usersRepository.findByEmail(username);
-        Users findUsers = userOptional.orElseThrow(
-            () -> new UsernameNotFoundException("이메일 " + username + " 을 찾을 수 없습니다."));
+        Users findUsers =
+                userOptional.orElseThrow(
+                        () -> new UsernameNotFoundException("이메일 " + username + " 을 찾을 수 없습니다."));
 
         return new UsersDetails(findUsers);
     }

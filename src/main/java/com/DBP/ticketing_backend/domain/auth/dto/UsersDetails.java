@@ -1,11 +1,13 @@
 package com.DBP.ticketing_backend.domain.auth.dto;
 
 import com.DBP.ticketing_backend.domain.users.entity.Users;
-import java.util.Collection;
-import java.util.List;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.List;
 
 public class UsersDetails implements UserDetails {
 
@@ -13,10 +15,10 @@ public class UsersDetails implements UserDetails {
     private final String password;
     private final String role;
 
-    public UsersDetails(Users users){
+    public UsersDetails(Users users) {
         this.email = users.getEmail();
         this.password = users.getPassword();
-        this.role= users.getRole().getKey();
+        this.role = users.getRole().getKey();
     }
 
     @Override

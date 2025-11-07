@@ -15,6 +15,4 @@ public class SignUpHostRequestDto {
     private String phoneNumber;
     private String companyName;
     private String businessNumber;
-
-
 }
