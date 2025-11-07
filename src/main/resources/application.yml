@@ -2,4 +2,4 @@ spring:
   application:
     name: ticketing-backend
   profiles:
-    default: local
+    active: local
