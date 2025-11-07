@@ -91,18 +91,20 @@ public class AuthService implements UserDetailsService {
 
     // 로그인
     public LoginResponseDto login(String email, String password) {
-        Users user = usersRepository.findByEmail(email)
-            .orElseThrow(() -> new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다."));
+        Users user =
+                usersRepository
+                        .findByEmail(email)
+                        .orElseThrow(() -> new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다."));
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다.");
         }
 
         return LoginResponseDto.builder()
-            .email(user.getEmail())
-            .name(user.getName())
-            .role(user.getRole().name())
-            .build();
+                .email(user.getEmail())
+                .name(user.getName())
+                .role(user.getRole().name())
+                .build();
     }
 
     // 로그인 -> Spring Security UserDetailsService 구현
