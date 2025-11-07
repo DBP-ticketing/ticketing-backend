@@ -1,7 +1,7 @@
 package com.DBP.ticketing_backend.domain.booking.entity;
 
 import com.DBP.ticketing_backend.domain.booking.enums.BookingStatus;
-import com.DBP.ticketing_backend.domain.user.entity.User;
+import com.DBP.ticketing_backend.domain.users.entity.Users;
 import com.DBP.ticketing_backend.global.common.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -32,7 +32,7 @@ public class Booking extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private Users users;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
@@ -42,8 +42,8 @@ public class Booking extends BaseEntity {
     private Integer totalPrice;
 
     @Builder
-    public Booking(User user, BookingStatus status, Integer totalPrice) {
-        this.user = user;
+    public Booking(Users users, BookingStatus status, Integer totalPrice) {
+        this.users = users;
         this.status = status != null ? status : BookingStatus.PENDING;
         this.totalPrice = totalPrice;
     }

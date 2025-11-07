@@ -1,7 +1,7 @@
 package com.DBP.ticketing_backend.domain.host.entity;
 
 import com.DBP.ticketing_backend.domain.host.enums.HostStatus;
-import com.DBP.ticketing_backend.domain.user.entity.User;
+import com.DBP.ticketing_backend.domain.users.entity.Users;
 import com.DBP.ticketing_backend.global.common.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -32,7 +32,7 @@ public class Host extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
-    private User user;
+    private Users users;
 
     @Column(nullable = false, length = 100)
     private String companyName;
@@ -45,8 +45,8 @@ public class Host extends BaseEntity {
     private HostStatus status;
 
     @Builder
-    public Host(User user, String companyName, String businessNumber, HostStatus status) {
-        this.user = user;
+    public Host(Users users, String companyName, String businessNumber, HostStatus status) {
+        this.users = users;
         this.companyName = companyName;
         this.businessNumber = businessNumber;
         this.status = status != null ? status : HostStatus.PENDING;
