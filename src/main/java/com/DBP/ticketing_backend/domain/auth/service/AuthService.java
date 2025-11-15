@@ -17,7 +17,6 @@ import com.DBP.ticketing_backend.domain.users.repository.UsersRepository;
 
 import jakarta.transaction.Transactional;
 
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,6 +25,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -40,65 +40,64 @@ public class AuthService implements UserDetailsService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final TokenBlacklistRepository tokenBlacklistRepository;
 
-    /**
-     * User 회원가입
-     */
+    /** User 회원가입 */
     public void saveUser(SignUpUserRequestDto signUpUserRequestDto) {
         if (usersRepository.findByEmail(signUpUserRequestDto.getEmail()).isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
         }
 
-        Users users = Users.builder()
-            .email(signUpUserRequestDto.getEmail())
-            .password(passwordEncoder.encode(signUpUserRequestDto.getPassword()))
-            .name(signUpUserRequestDto.getName())
-            .phoneNumber(signUpUserRequestDto.getPhoneNumber())
-            .role(UsersRole.USER)
-            .build();
+        Users users =
+                Users.builder()
+                        .email(signUpUserRequestDto.getEmail())
+                        .password(passwordEncoder.encode(signUpUserRequestDto.getPassword()))
+                        .name(signUpUserRequestDto.getName())
+                        .phoneNumber(signUpUserRequestDto.getPhoneNumber())
+                        .role(UsersRole.USER)
+                        .build();
 
         usersRepository.save(users);
     }
 
-    /**
-     * Host 회원가입
-     */
+    /** Host 회원가입 */
     public void saveHost(SignUpHostRequestDto signUpHostRequestDto) {
         if (usersRepository.findByEmail(signUpHostRequestDto.getEmail()).isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
         }
 
-        if (hostRepository.findByBusinessNumber(signUpHostRequestDto.getBusinessNumber())
-            .isPresent()) {
+        if (hostRepository
+                .findByBusinessNumber(signUpHostRequestDto.getBusinessNumber())
+                .isPresent()) {
             throw new IllegalArgumentException("이미 등록된 사업자번호입니다.");
         }
 
-        Users users = Users.builder()
-            .email(signUpHostRequestDto.getEmail())
-            .password(passwordEncoder.encode(signUpHostRequestDto.getPassword()))
-            .name(signUpHostRequestDto.getName())
-            .phoneNumber(signUpHostRequestDto.getPhoneNumber())
-            .role(UsersRole.HOST)
-            .build();
+        Users users =
+                Users.builder()
+                        .email(signUpHostRequestDto.getEmail())
+                        .password(passwordEncoder.encode(signUpHostRequestDto.getPassword()))
+                        .name(signUpHostRequestDto.getName())
+                        .phoneNumber(signUpHostRequestDto.getPhoneNumber())
+                        .role(UsersRole.HOST)
+                        .build();
 
         usersRepository.save(users);
 
-        Host host = Host.builder()
-            .users(users)
-            .companyName(signUpHostRequestDto.getCompanyName())
-            .businessNumber(signUpHostRequestDto.getBusinessNumber())
-            .status(HostStatus.PENDING)
-            .build();
+        Host host =
+                Host.builder()
+                        .users(users)
+                        .companyName(signUpHostRequestDto.getCompanyName())
+                        .businessNumber(signUpHostRequestDto.getBusinessNumber())
+                        .status(HostStatus.PENDING)
+                        .build();
 
         hostRepository.save(host);
     }
 
-    /**
-     * 로그인 (Access Token + Refresh Token 발급)
-     */
+    /** 로그인 (Access Token + Refresh Token 발급) */
     public LoginResponseDto login(String email, String password) {
-        Users user = usersRepository.findByEmail(email)
-            .orElseThrow(
-                () -> new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다."));
+        Users user =
+                usersRepository
+                        .findByEmail(email)
+                        .orElseThrow(() -> new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다."));
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다.");
@@ -106,8 +105,10 @@ public class AuthService implements UserDetailsService {
 
         // HOST인 경우 승인 상태 확인
         if (user.getRole() == UsersRole.HOST) {
-            Host host = hostRepository.findByUsers(user)
-                .orElseThrow(() -> new IllegalArgumentException("호스트 정보를 찾을 수 없습니다."));
+            Host host =
+                    hostRepository
+                            .findByUsers(user)
+                            .orElseThrow(() -> new IllegalArgumentException("호스트 정보를 찾을 수 없습니다."));
 
             if (host.getStatus() == HostStatus.REJECTED) {
                 throw new IllegalStateException("승인이 거부된 계정입니다. 고객센터에 문의해주세요.");
@@ -122,35 +123,32 @@ public class AuthService implements UserDetailsService {
             }
         }
         // Access Token 생성
-        String accessToken = jwtTokenProvider.generateAccessToken(
-            user.getEmail(),
-            user.getRole().name()
-        );
+        String accessToken =
+                jwtTokenProvider.generateAccessToken(user.getEmail(), user.getRole().name());
 
         // Refresh Token 생성
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getEmail());
 
         // 기존 Refresh Token 삭제 후 새로 저장
         refreshTokenRepository.deleteByUser(user);
-        RefreshToken newRefreshToken = RefreshToken.builder()
-            .user(user)
-            .token(refreshToken)
-            .expiryDate(jwtTokenProvider.getRefreshTokenExpiryDate())
-            .build();
+        RefreshToken newRefreshToken =
+                RefreshToken.builder()
+                        .user(user)
+                        .token(refreshToken)
+                        .expiryDate(jwtTokenProvider.getRefreshTokenExpiryDate())
+                        .build();
         refreshTokenRepository.save(newRefreshToken);
 
         return LoginResponseDto.builder()
-            .email(user.getEmail())
-            .name(user.getName())
-            .role(user.getRole().name())
-            .accessToken(accessToken)
-            .refreshToken(refreshToken)
-            .build();
+                .email(user.getEmail())
+                .name(user.getName())
+                .role(user.getRole().name())
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
     }
 
-    /**
-     * Access Token 재발급
-     */
+    /** Access Token 재발급 */
     public String refreshAccessToken(String refreshToken) {
         // Refresh Token 검증
         if (!jwtTokenProvider.validateToken(refreshToken)) {
@@ -158,8 +156,11 @@ public class AuthService implements UserDetailsService {
         }
 
         // DB에서 Refresh Token 조회
-        RefreshToken storedToken = refreshTokenRepository.findByToken(refreshToken)
-            .orElseThrow(() -> new IllegalArgumentException("Refresh Token을 찾을 수 없습니다."));
+        RefreshToken storedToken =
+                refreshTokenRepository
+                        .findByToken(refreshToken)
+                        .orElseThrow(
+                                () -> new IllegalArgumentException("Refresh Token을 찾을 수 없습니다."));
 
         // 만료 확인
         if (storedToken.isExpired()) {
@@ -169,48 +170,43 @@ public class AuthService implements UserDetailsService {
 
         // 새로운 Access Token 발급
         Users user = storedToken.getUser();
-        return jwtTokenProvider.generateAccessToken(
-            user.getEmail(),
-            user.getRole().name()
-        );
+        return jwtTokenProvider.generateAccessToken(user.getEmail(), user.getRole().name());
     }
 
-    /**
-     * 로그아웃 (Access Token 블랙리스트 + Refresh Token 삭제)
-     */
+    /** 로그아웃 (Access Token 블랙리스트 + Refresh Token 삭제) */
     public void logout(String accessToken) {
         // Access Token 블랙리스트 추가
         String email = jwtTokenProvider.getEmailFromToken(accessToken);
         LocalDateTime expiryDate = jwtTokenProvider.getExpiryDateFromToken(accessToken);
 
-        TokenBlacklist blacklist = TokenBlacklist.builder()
-            .token(accessToken)
-            .email(email)
-            .expiryDate(expiryDate)
-            .build();
+        TokenBlacklist blacklist =
+                TokenBlacklist.builder()
+                        .token(accessToken)
+                        .email(email)
+                        .expiryDate(expiryDate)
+                        .build();
         tokenBlacklistRepository.save(blacklist);
 
         // Refresh Token 삭제
-        Users user = usersRepository.findByEmail(email)
-            .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        Users user =
+                usersRepository
+                        .findByEmail(email)
+                        .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
         refreshTokenRepository.deleteByUser(user);
     }
 
-    /**
-     * 토큰이 블랙리스트에 있는지 확인
-     */
+    /** 토큰이 블랙리스트에 있는지 확인 */
     public boolean isTokenBlacklisted(String token) {
         return tokenBlacklistRepository.existsByToken(token);
     }
 
-    /**
-     * Spring Security UserDetailsService 구현
-     */
+    /** Spring Security UserDetailsService 구현 */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<Users> userOptional = usersRepository.findByEmail(username);
-        Users findUsers = userOptional.orElseThrow(
-            () -> new UsernameNotFoundException("이메일 " + username + " 을 찾을 수 없습니다."));
+        Users findUsers =
+                userOptional.orElseThrow(
+                        () -> new UsernameNotFoundException("이메일 " + username + " 을 찾을 수 없습니다."));
 
         return new UsersDetails(findUsers);
     }

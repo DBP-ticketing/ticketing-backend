@@ -1,8 +1,10 @@
 package com.DBP.ticketing_backend.domain.auth.repository;
 
 import com.DBP.ticketing_backend.domain.auth.entity.TokenBlacklist;
-import java.time.LocalDateTime;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.time.LocalDateTime;
 
 public interface TokenBlacklistRepository extends JpaRepository<TokenBlacklist, Long> {
 
