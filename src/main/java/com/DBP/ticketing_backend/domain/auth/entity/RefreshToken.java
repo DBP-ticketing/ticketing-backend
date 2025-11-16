@@ -1,13 +1,10 @@
-package com.DBP.ticketing_backend.domain.booking.entity;
+package com.DBP.ticketing_backend.domain.auth.entity;
 
-import com.DBP.ticketing_backend.domain.booking.enums.BookingStatus;
 import com.DBP.ticketing_backend.domain.users.entity.Users;
 import com.DBP.ticketing_backend.global.common.BaseEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,31 +17,36 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Booking extends BaseEntity {
+public class RefreshToken extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "booking_id")
-    private Long bookingId;
+    @Column(name = "refresh_token_id")
+    private Long refreshTokenId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private Users users;
+    private Users user;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private BookingStatus status;
+    @Column(nullable = false, length = 500)
+    private String token;
 
     @Column(nullable = false)
-    private Integer totalPrice;
+    private LocalDateTime expiryDate;
 
     @Builder
-    public Booking(Users users, BookingStatus status, Integer totalPrice) {
-        this.users = users;
-        this.status = status != null ? status : BookingStatus.PENDING;
-        this.totalPrice = totalPrice;
+    public RefreshToken(Users user, String token, LocalDateTime expiryDate) {
+        this.user = user;
+        this.token = token;
+        this.expiryDate = expiryDate;
+    }
+
+    public boolean isExpired() {
+        return LocalDateTime.now().isAfter(expiryDate);
     }
 }

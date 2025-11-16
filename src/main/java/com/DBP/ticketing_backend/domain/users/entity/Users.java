@@ -1,6 +1,6 @@
-package com.DBP.ticketing_backend.domain.user.entity;
+package com.DBP.ticketing_backend.domain.users.entity;
 
-import com.DBP.ticketing_backend.domain.user.enums.UserRole;
+import com.DBP.ticketing_backend.domain.users.enums.UsersRole;
 import com.DBP.ticketing_backend.global.common.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class User extends BaseEntity {
+public class Users extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,10 +44,10 @@ public class User extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private UserRole role;
+    private UsersRole role;
 
     @Builder
-    public User(String password, String name, String phoneNumber, String email, UserRole role) {
+    public Users(String password, String name, String phoneNumber, String email, UsersRole role) {
         this.password = password;
         this.name = name;
         this.phoneNumber = phoneNumber;
