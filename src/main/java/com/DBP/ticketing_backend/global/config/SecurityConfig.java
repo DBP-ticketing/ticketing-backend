@@ -39,14 +39,14 @@ public class SecurityConfig {
                         auth -> {
                             // 인증 없이 접근 가능한 경로
                             auth.requestMatchers(
-                                            "/auth/signup/**", // 회원가입
-                                            "/auth/login", // 로그인
-                                            "/auth/refresh" // 토큰 재발급
+                                            "/api/auth/signup/**", // 회원가입
+                                            "/api/auth/login", // 로그인
+                                            "/api/auth/refresh" // 토큰 재발급
                                             )
                                     .permitAll();
 
                             // 로그아웃은 인증 필요
-                            auth.requestMatchers("/auth/logout").authenticated();
+                            auth.requestMatchers("/api/auth/logout").authenticated();
 
                             // ADMIN만 접근 가능
                             auth.requestMatchers("/admin/**").hasRole("ADMIN");
