@@ -7,6 +7,9 @@ import com.DBP.ticketing_backend.domain.auth.dto.response.AuthResponseDto;
 import com.DBP.ticketing_backend.domain.auth.dto.response.LoginResponseDto;
 import com.DBP.ticketing_backend.domain.auth.service.AuthService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
@@ -20,16 +23,18 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
-@RequestMapping("auth")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Tag(name = " Auth api", description = "인증/인가와 관련된 API 입니다.")
 public class AuthController {
 
     private final AuthService authService;
 
     /** 일반 사용자 회원가입 */
+    @Operation(summary = "유저 회원가입", description = "일반 유저로 회원가입 요청을 합니다.")
     @PostMapping("/signup/user")
     public ResponseEntity<AuthResponseDto<Void>> signUpUser(
-            @RequestBody SignUpUserRequestDto request) {
+        @Valid @RequestBody SignUpUserRequestDto request) {
         try {
             authService.saveUser(request);
             return ResponseEntity.ok(AuthResponseDto.success("회원가입이 완료되었습니다."));
@@ -39,18 +44,20 @@ public class AuthController {
     }
 
     /** 호스트 회원가입 */
+    @Operation(summary = "호스트 회원가입", description = "호스트로 회원가입 요청을 합니다.")
     @PostMapping("/signup/host")
     public ResponseEntity<AuthResponseDto<Void>> signUpHost(
-            @RequestBody SignUpHostRequestDto request) {
+        @Valid @RequestBody SignUpHostRequestDto request) {
         try {
             authService.saveHost(request);
-            return ResponseEntity.ok(AuthResponseDto.success("회원가입이 완료되었습니다."));
+            return ResponseEntity.ok(AuthResponseDto.success("회원가입 요청이 완료되었습니다. 승인을 기다려주세요."));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(AuthResponseDto.error(e.getMessage()));
         }
     }
 
     /** 로그인 */
+    @Operation(summary = "로그인", description = "로그인을 합니다.")
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDto<LoginResponseDto>> login(
             @RequestBody LoginRequestDto request) {
@@ -86,6 +93,7 @@ public class AuthController {
     }
 
     /** 로그아웃 */
+    @Operation(summary = "로그아웃", description = "로그아웃을 합니다.")
     @PostMapping("/logout")
     public ResponseEntity<AuthResponseDto<Void>> logout(
             @RequestHeader("Authorization") String authorizationHeader) {

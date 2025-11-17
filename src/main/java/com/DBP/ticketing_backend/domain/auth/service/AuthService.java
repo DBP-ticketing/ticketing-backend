@@ -15,6 +15,8 @@ import com.DBP.ticketing_backend.domain.users.entity.Users;
 import com.DBP.ticketing_backend.domain.users.enums.UsersRole;
 import com.DBP.ticketing_backend.domain.users.repository.UsersRepository;
 
+import com.DBP.ticketing_backend.global.exception.CustomException;
+import com.DBP.ticketing_backend.global.exception.ErrorCode;
 import jakarta.transaction.Transactional;
 
 import lombok.RequiredArgsConstructor;
@@ -43,7 +45,7 @@ public class AuthService implements UserDetailsService {
     /** User 회원가입 */
     public void saveUser(SignUpUserRequestDto signUpUserRequestDto) {
         if (usersRepository.findByEmail(signUpUserRequestDto.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
+            throw new CustomException(ErrorCode.DUPLICATE_MEMBER_EMAIL);
         }
 
         Users users =
@@ -52,7 +54,7 @@ public class AuthService implements UserDetailsService {
                         .password(passwordEncoder.encode(signUpUserRequestDto.getPassword()))
                         .name(signUpUserRequestDto.getName())
                         .phoneNumber(signUpUserRequestDto.getPhoneNumber())
-                        .role(UsersRole.USER)
+                        .role(UsersRole.ROLE_USER)
                         .build();
 
         usersRepository.save(users);
@@ -61,13 +63,13 @@ public class AuthService implements UserDetailsService {
     /** Host 회원가입 */
     public void saveHost(SignUpHostRequestDto signUpHostRequestDto) {
         if (usersRepository.findByEmail(signUpHostRequestDto.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
+            throw new CustomException(ErrorCode.DUPLICATE_MEMBER_EMAIL);
         }
 
         if (hostRepository
                 .findByBusinessNumber(signUpHostRequestDto.getBusinessNumber())
                 .isPresent()) {
-            throw new IllegalArgumentException("이미 등록된 사업자번호입니다.");
+            throw new CustomException(ErrorCode.DUPLICATE_BUSINESS_NUMBER);
         }
 
         Users users =
@@ -76,7 +78,7 @@ public class AuthService implements UserDetailsService {
                         .password(passwordEncoder.encode(signUpHostRequestDto.getPassword()))
                         .name(signUpHostRequestDto.getName())
                         .phoneNumber(signUpHostRequestDto.getPhoneNumber())
-                        .role(UsersRole.HOST)
+                        .role(UsersRole.ROLE_HOST)
                         .build();
 
         usersRepository.save(users);
@@ -97,18 +99,18 @@ public class AuthService implements UserDetailsService {
         Users user =
                 usersRepository
                         .findByEmail(email)
-                        .orElseThrow(() -> new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다."));
+                        .orElseThrow(() -> new CustomException(ErrorCode.INVALID_EMAIL_OR_PASSWORD));
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다.");
+            throw new CustomException(ErrorCode.INVALID_EMAIL_OR_PASSWORD);
         }
 
         // HOST인 경우 승인 상태 확인
-        if (user.getRole() == UsersRole.HOST) {
+        if (user.getRole() == UsersRole.ROLE_HOST) {
             Host host =
                     hostRepository
                             .findByUsers(user)
-                            .orElseThrow(() -> new IllegalArgumentException("호스트 정보를 찾을 수 없습니다."));
+                            .orElseThrow(() -> new CustomException(ErrorCode.HOST_NOT_FOUND));
 
             if (host.getStatus() == HostStatus.REJECTED) {
                 throw new IllegalStateException("승인이 거부된 계정입니다. 고객센터에 문의해주세요.");
@@ -152,7 +154,7 @@ public class AuthService implements UserDetailsService {
     public String refreshAccessToken(String refreshToken) {
         // Refresh Token 검증
         if (!jwtTokenProvider.validateToken(refreshToken)) {
-            throw new IllegalArgumentException("유효하지 않은 Refresh Token입니다.");
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
         }
 
         // DB에서 Refresh Token 조회
@@ -160,12 +162,12 @@ public class AuthService implements UserDetailsService {
                 refreshTokenRepository
                         .findByToken(refreshToken)
                         .orElseThrow(
-                                () -> new IllegalArgumentException("Refresh Token을 찾을 수 없습니다."));
+                                () -> new CustomException(ErrorCode.TOKEN_NOT_FOUND));
 
         // 만료 확인
         if (storedToken.isExpired()) {
             refreshTokenRepository.delete(storedToken);
-            throw new IllegalArgumentException("만료된 Refresh Token입니다.");
+            throw new CustomException(ErrorCode.EXPIRED_TOKEN);
         }
 
         // 새로운 Access Token 발급
@@ -191,7 +193,7 @@ public class AuthService implements UserDetailsService {
         Users user =
                 usersRepository
                         .findByEmail(email)
-                        .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+                        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
         refreshTokenRepository.deleteByUser(user);
     }
 
