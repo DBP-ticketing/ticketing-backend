@@ -4,9 +4,9 @@ import com.DBP.ticketing_backend.domain.auth.dto.response.HostResponseDto;
 import com.DBP.ticketing_backend.domain.host.entity.Host;
 import com.DBP.ticketing_backend.domain.host.enums.HostStatus;
 import com.DBP.ticketing_backend.domain.host.repository.HostRepository;
-
 import com.DBP.ticketing_backend.global.exception.CustomException;
 import com.DBP.ticketing_backend.global.exception.ErrorCode;
+
 import jakarta.transaction.Transactional;
 
 import lombok.RequiredArgsConstructor;

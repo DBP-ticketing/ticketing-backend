@@ -9,7 +9,9 @@ import com.DBP.ticketing_backend.domain.auth.service.AuthService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
 import jakarta.validation.Valid;
+
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
@@ -34,7 +36,7 @@ public class AuthController {
     @Operation(summary = "유저 회원가입", description = "일반 유저로 회원가입 요청을 합니다.")
     @PostMapping("/signup/user")
     public ResponseEntity<AuthResponseDto<Void>> signUpUser(
-        @Valid @RequestBody SignUpUserRequestDto request) {
+            @Valid @RequestBody SignUpUserRequestDto request) {
         try {
             authService.saveUser(request);
             return ResponseEntity.ok(AuthResponseDto.success("회원가입이 완료되었습니다."));
@@ -47,7 +49,7 @@ public class AuthController {
     @Operation(summary = "호스트 회원가입", description = "호스트로 회원가입 요청을 합니다.")
     @PostMapping("/signup/host")
     public ResponseEntity<AuthResponseDto<Void>> signUpHost(
-        @Valid @RequestBody SignUpHostRequestDto request) {
+            @Valid @RequestBody SignUpHostRequestDto request) {
         try {
             authService.saveHost(request);
             return ResponseEntity.ok(AuthResponseDto.success("회원가입 요청이 완료되었습니다. 승인을 기다려주세요."));
