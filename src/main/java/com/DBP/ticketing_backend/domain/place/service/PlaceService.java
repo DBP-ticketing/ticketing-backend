@@ -12,11 +12,14 @@ import com.DBP.ticketing_backend.domain.users.enums.UsersRole;
 import com.DBP.ticketing_backend.domain.users.repository.UsersRepository;
 import com.DBP.ticketing_backend.global.exception.CustomException;
 import com.DBP.ticketing_backend.global.exception.ErrorCode;
-import java.util.ArrayList;
-import java.util.List;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -31,10 +34,11 @@ public class PlaceService {
 
         validateAdmin(usersDetails);
 
-        Place place = Place.builder()
-            .placeName(requestDto.getPlaceName())
-            .address(requestDto.getAddress())
-            .build();
+        Place place =
+                Place.builder()
+                        .placeName(requestDto.getPlaceName())
+                        .address(requestDto.getAddress())
+                        .build();
 
         Place savedPlace = placeRepository.save(place);
 
@@ -48,12 +52,13 @@ public class PlaceService {
 
             for (int r = 1; r <= rows; r++) {
                 for (int c = 1; c <= cols; c++) {
-                    SeatTemplate seatTemplate = SeatTemplate.builder()
-                        .place(savedPlace)
-                        .section(sectionName)
-                        .row(r)
-                        .column(c)
-                        .build();
+                    SeatTemplate seatTemplate =
+                            SeatTemplate.builder()
+                                    .place(savedPlace)
+                                    .section(sectionName)
+                                    .row(r)
+                                    .column(c)
+                                    .build();
 
                     seatTemplates.add(seatTemplate);
                 }
@@ -87,8 +92,10 @@ public class PlaceService {
     }
 
     private void validateAdmin(UsersDetails usersDetails) {
-        Users user = usersRepository.findById(usersDetails.getUserId())
-            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        Users user =
+                usersRepository
+                        .findById(usersDetails.getUserId())
+                        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         if (user.getRole() != UsersRole.ROLE_ADMIN) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_ACCESS);
@@ -96,7 +103,8 @@ public class PlaceService {
     }
 
     private Place findPlaceById(Long placeId) {
-        return placeRepository.findById(placeId)
-            .orElseThrow(() -> new CustomException(ErrorCode.PLACE_NOT_FOUND));
+        return placeRepository
+                .findById(placeId)
+                .orElseThrow(() -> new CustomException(ErrorCode.PLACE_NOT_FOUND));
     }
 }
