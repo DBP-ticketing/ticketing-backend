@@ -49,10 +49,11 @@ public class SecurityConfig {
                             auth.requestMatchers("/api/auth/logout").authenticated();
 
                             // ADMIN만 접근 가능
-                            auth.requestMatchers("/admin/**").hasRole("ADMIN");
+                            auth.requestMatchers("/api/admin/**").hasRole("ADMIN");
+                            auth.requestMatchers("/api/place/**").hasRole("ADMIN");
 
                             // HOST만 접근 가능
-                            auth.requestMatchers("/host/**").hasRole("HOST");
+                            auth.requestMatchers("/api/host/**").hasRole("HOST");
 
                             // USER, HOST 모두 접근 가능
                             auth.requestMatchers("/api/**").authenticated();
