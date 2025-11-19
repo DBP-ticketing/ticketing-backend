@@ -21,13 +21,16 @@ import com.DBP.ticketing_backend.domain.users.entity.Users;
 import com.DBP.ticketing_backend.domain.users.repository.UsersRepository;
 import com.DBP.ticketing_backend.global.exception.CustomException;
 import com.DBP.ticketing_backend.global.exception.ErrorCode;
+
+import lombok.RequiredArgsConstructor;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -43,29 +46,36 @@ public class EventService {
     @Transactional
     public Long createEvent(CreateEventRequestDto requestDto, UsersDetails usersDetails) {
 
-        Users user = usersRepository.findById(usersDetails.getUserId())
-            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        Users user =
+                usersRepository
+                        .findById(usersDetails.getUserId())
+                        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-        Host host = hostRepository.findByUsers(user)
-            .orElseThrow(() -> new CustomException(ErrorCode.HOST_NOT_FOUND));
+        Host host =
+                hostRepository
+                        .findByUsers(user)
+                        .orElseThrow(() -> new CustomException(ErrorCode.HOST_NOT_FOUND));
 
-        Place place = placeRepository.findById(requestDto.getPlaceId())
-            .orElseThrow(() -> new CustomException(ErrorCode.PLACE_NOT_FOUND));
+        Place place =
+                placeRepository
+                        .findById(requestDto.getPlaceId())
+                        .orElseThrow(() -> new CustomException(ErrorCode.PLACE_NOT_FOUND));
 
         if (requestDto.getTicketingStartAt().isAfter(requestDto.getDate())) {
             throw new CustomException(ErrorCode.INVALID_TICKET_OPEN_TIME);
             // ErrorCode에 "예매 오픈 시간은 공연 시간보다 빨라야 합니다." 추가 필요
         }
 
-        Event event = Event.builder()
-            .host(host)
-            .place(place)
-            .eventName(requestDto.getEventName())
-            .category(requestDto.getCategory())
-            .date(requestDto.getDate())
-            .ticketingStartAt(requestDto.getTicketingStartAt())
-            .seatForm(requestDto.getSeatForm())
-            .build(); // status는 디폴트(SCHEDULED) 적용
+        Event event =
+                Event.builder()
+                        .host(host)
+                        .place(place)
+                        .eventName(requestDto.getEventName())
+                        .category(requestDto.getCategory())
+                        .date(requestDto.getDate())
+                        .ticketingStartAt(requestDto.getTicketingStartAt())
+                        .seatForm(requestDto.getSeatForm())
+                        .build(); // status는 디폴트(SCHEDULED) 적용
 
         Event savedEvent = eventRepository.save(event);
 
@@ -76,11 +86,12 @@ public class EventService {
             throw new CustomException(ErrorCode.TEMPLATE_NOT_FOUND);
         }
 
-        Map<String, SectionSetting> settingMap = requestDto.getSeatSettings().stream()
-            .collect(Collectors.toMap(
-                CreateEventRequestDto.SectionSetting::getSectionName,
-                setting -> setting
-            ));
+        Map<String, SectionSetting> settingMap =
+                requestDto.getSeatSettings().stream()
+                        .collect(
+                                Collectors.toMap(
+                                        CreateEventRequestDto.SectionSetting::getSectionName,
+                                        setting -> setting));
 
         List<Seat> seatsToSave = new ArrayList<>();
 
@@ -90,16 +101,18 @@ public class EventService {
             CreateEventRequestDto.SectionSetting setting = settingMap.get(sectionName);
 
             if (setting == null) {
-                throw new CustomException(ErrorCode.SECTION_SETTING_MISSING); // "해당 구역의 가격 설정이 없습니다."
+                throw new CustomException(
+                        ErrorCode.SECTION_SETTING_MISSING); // "해당 구역의 가격 설정이 없습니다."
             }
 
-            Seat seat = Seat.builder()
-                .event(savedEvent)
-                .template(template)
-                .level(setting.getSeatLevel())
-                .price(setting.getPrice())
-                .status(SeatStatus.AVAILABLE)
-                .build();
+            Seat seat =
+                    Seat.builder()
+                            .event(savedEvent)
+                            .template(template)
+                            .level(setting.getSeatLevel())
+                            .price(setting.getPrice())
+                            .status(SeatStatus.AVAILABLE)
+                            .build();
 
             seatsToSave.add(seat);
         }
@@ -122,15 +135,15 @@ public class EventService {
             events = eventRepository.findAllByStatusOrderByCreatedAtDesc(status);
         }
 
-        return events.stream()
-            .map(EventListResponseDto::from)
-            .toList();
+        return events.stream().map(EventListResponseDto::from).toList();
     }
 
     @Transactional(readOnly = true)
     public EventDetailResponseDto getEvent(Long eventId) {
-        Event event = eventRepository.findById(eventId)
-            .orElseThrow(() -> new CustomException(ErrorCode.EVENT_NOT_FOUND));
+        Event event =
+                eventRepository
+                        .findById(eventId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.EVENT_NOT_FOUND));
 
         return EventDetailResponseDto.from(event);
     }

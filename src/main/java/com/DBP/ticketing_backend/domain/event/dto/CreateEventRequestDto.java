@@ -3,14 +3,17 @@ package com.DBP.ticketing_backend.domain.event.dto;
 import com.DBP.ticketing_backend.domain.event.enums.EventCategory;
 import com.DBP.ticketing_backend.domain.event.enums.SeatForm;
 import com.DBP.ticketing_backend.domain.seat.enums.SeatLevel;
+
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+
+import lombok.Data;
+
 import java.time.LocalDateTime;
 import java.util.List;
-import lombok.Data;
 
 @Data
 public class CreateEventRequestDto {
@@ -50,5 +53,4 @@ public class CreateEventRequestDto {
         @Min(value = 0, message = "가격은 0원 이상이어야 합니다.")
         private Integer price;
     }
-
 }
