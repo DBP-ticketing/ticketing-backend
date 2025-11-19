@@ -39,7 +39,7 @@ public class AdminController {
 
     // 모든 호스트 목록 조회
     @Operation(summary = "호스트 조회", description = "호스트 정보들을 조회합니다.")
-    @GetMapping("/hosts")
+    @GetMapping("/host")
     public ResponseEntity<AuthResponseDto<List<HostResponseDto>>> getAllHosts() {
         try {
             List<HostResponseDto> hosts = adminService.getAllHosts();
