@@ -14,9 +14,9 @@ import com.DBP.ticketing_backend.domain.host.repository.HostRepository;
 import com.DBP.ticketing_backend.domain.users.entity.Users;
 import com.DBP.ticketing_backend.domain.users.enums.UsersRole;
 import com.DBP.ticketing_backend.domain.users.repository.UsersRepository;
-
 import com.DBP.ticketing_backend.global.exception.CustomException;
 import com.DBP.ticketing_backend.global.exception.ErrorCode;
+
 import jakarta.transaction.Transactional;
 
 import lombok.RequiredArgsConstructor;
@@ -99,7 +99,8 @@ public class AuthService implements UserDetailsService {
         Users user =
                 usersRepository
                         .findByEmail(email)
-                        .orElseThrow(() -> new CustomException(ErrorCode.INVALID_EMAIL_OR_PASSWORD));
+                        .orElseThrow(
+                                () -> new CustomException(ErrorCode.INVALID_EMAIL_OR_PASSWORD));
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new CustomException(ErrorCode.INVALID_EMAIL_OR_PASSWORD);
@@ -161,8 +162,7 @@ public class AuthService implements UserDetailsService {
         RefreshToken storedToken =
                 refreshTokenRepository
                         .findByToken(refreshToken)
-                        .orElseThrow(
-                                () -> new CustomException(ErrorCode.TOKEN_NOT_FOUND));
+                        .orElseThrow(() -> new CustomException(ErrorCode.TOKEN_NOT_FOUND));
 
         // 만료 확인
         if (storedToken.isExpired()) {
