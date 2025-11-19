@@ -10,6 +10,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,6 +45,8 @@ public class AdminController {
     @GetMapping("/host")
     public ResponseEntity<AuthResponseDto<List<HostResponseDto>>> getAllHosts() {
         try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            System.out.println("Controller Auth: " + auth);
             List<HostResponseDto> hosts = adminService.getAllHosts();
             return ResponseEntity.ok(AuthResponseDto.success("호스트 목록 조회 성공", hosts));
         } catch (Exception e) {
