@@ -4,8 +4,10 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import java.util.List;
+
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class CreatePlaceRequestDto {
@@ -32,5 +34,4 @@ public class CreatePlaceRequestDto {
         @Min(value = 1, message = "열은 1 이상이어야 합니다.")
         private Integer columns; // m
     }
-
 }

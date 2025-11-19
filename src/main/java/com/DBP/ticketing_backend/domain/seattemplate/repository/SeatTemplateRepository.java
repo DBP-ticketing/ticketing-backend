@@ -2,8 +2,10 @@ package com.DBP.ticketing_backend.domain.seattemplate.repository;
 
 import com.DBP.ticketing_backend.domain.place.entity.Place;
 import com.DBP.ticketing_backend.domain.seattemplate.entity.SeatTemplate;
-import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
 
 public interface SeatTemplateRepository extends JpaRepository<SeatTemplate, Long> {
 
