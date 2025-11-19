@@ -4,6 +4,8 @@ import com.DBP.ticketing_backend.domain.auth.dto.response.HostResponseDto;
 import com.DBP.ticketing_backend.domain.host.entity.Host;
 import com.DBP.ticketing_backend.domain.host.enums.HostStatus;
 import com.DBP.ticketing_backend.domain.host.repository.HostRepository;
+import com.DBP.ticketing_backend.global.exception.CustomException;
+import com.DBP.ticketing_backend.global.exception.ErrorCode;
 
 import jakarta.transaction.Transactional;
 
@@ -38,10 +40,10 @@ public class AdminService {
         Host host =
                 hostRepository
                         .findById(hostId)
-                        .orElseThrow(() -> new IllegalArgumentException("호스트를 찾을 수 없습니다."));
+                        .orElseThrow(() -> new CustomException(ErrorCode.HOST_NOT_FOUND));
 
         if (host.getStatus() != HostStatus.PENDING) {
-            throw new IllegalStateException("대기 중인 호스트만 승인할 수 있습니다.");
+            throw new CustomException(ErrorCode.NOT_A_PENDING_HOST);
         }
 
         host.approve();
@@ -52,10 +54,10 @@ public class AdminService {
         Host host =
                 hostRepository
                         .findById(hostId)
-                        .orElseThrow(() -> new IllegalArgumentException("호스트를 찾을 수 없습니다."));
+                        .orElseThrow(() -> new CustomException(ErrorCode.HOST_NOT_FOUND));
 
         if (host.getStatus() != HostStatus.PENDING) {
-            throw new IllegalStateException("대기 중인 호스트만 거부할 수 있습니다.");
+            throw new CustomException(ErrorCode.NOT_A_PENDING_HOST);
         }
 
         // 호스트 거부
@@ -67,10 +69,10 @@ public class AdminService {
         Host host =
                 hostRepository
                         .findById(hostId)
-                        .orElseThrow(() -> new IllegalArgumentException("호스트를 찾을 수 없습니다."));
+                        .orElseThrow(() -> new CustomException(ErrorCode.HOST_NOT_FOUND));
 
         if (host.getStatus() != HostStatus.ACTIVE) {
-            throw new IllegalStateException("활성화된 호스트만 정지할 수 있습니다.");
+            throw new CustomException(ErrorCode.NOT_AN_ACTIVATED_HOST);
         }
 
         host.suspend();
@@ -84,7 +86,7 @@ public class AdminService {
                         .orElseThrow(() -> new IllegalArgumentException("호스트를 찾을 수 없습니다."));
 
         if (host.getStatus() != HostStatus.SUSPENDED) {
-            throw new IllegalStateException("정지된 호스트만 활성화할 수 있습니다.");
+            throw new CustomException(ErrorCode.NOT_AN_ACTIVATED_HOST);
         }
 
         host.approve();
