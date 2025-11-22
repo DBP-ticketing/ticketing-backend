@@ -24,6 +24,7 @@ public enum ErrorCode {
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),
     UNAUTHORIZED_ACCESS(HttpStatus.UNAUTHORIZED, "권한이 없는 접근입니다."),
+    INVALID_SEAT_STATUS(HttpStatus.UNAUTHORIZED, "유효하지 않은 좌석 상태입니다."),
 
     // 404 Not Found: 리소스를 찾을 수 없음
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 사용자를 찾을 수 없습니다."),
