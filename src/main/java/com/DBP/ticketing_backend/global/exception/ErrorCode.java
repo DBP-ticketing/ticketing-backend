@@ -18,8 +18,7 @@ public enum ErrorCode {
     INVALID_BOOKING_STATUS(HttpStatus.BAD_REQUEST, "유효하지 않은 예약 상태입니다."),
     TICKETING_NOT_OPEN(HttpStatus.BAD_REQUEST, "예매가 오픈되지 않은 공연입니다."),
     TICKETING_CLOSED(HttpStatus.BAD_REQUEST, "예매가 종료된 공연입니다."),
-    INVALID_SEAT_STATUS(HttpStatus.BAD_REQUEST, "유효하지 않은 좌석 상태입니다."),
-
+    ONLY_ON_THE_HOUR(HttpStatus.BAD_REQUEST, "예매 오픈은 정각 단위로만 설정 가능합니다."),
     // 401 Unauthorized: 인증되지 않은 사용자
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증이 필요한 요청입니다."),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
