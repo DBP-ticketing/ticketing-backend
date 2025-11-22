@@ -43,7 +43,8 @@ public class SecurityConfig {
                                             "/api/auth/login", // 로그인
                                             "/api/auth/refresh", // 토큰 재발급
                                             "/api/events",
-                                            "/api/events/{eventId}")
+                                            "/api/events/{eventId}",
+                                            "/api/seat/**")
                                     .permitAll();
 
                             // 로그아웃은 인증 필요
