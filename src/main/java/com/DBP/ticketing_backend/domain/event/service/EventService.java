@@ -2,7 +2,6 @@ package com.DBP.ticketing_backend.domain.event.service;
 
 import com.DBP.ticketing_backend.domain.auth.dto.UsersDetails;
 import com.DBP.ticketing_backend.domain.event.dto.CreateEventRequestDto;
-import com.DBP.ticketing_backend.domain.event.dto.CreateEventRequestDto.SectionSetting;
 import com.DBP.ticketing_backend.domain.event.dto.EventDetailResponseDto;
 import com.DBP.ticketing_backend.domain.event.dto.EventListResponseDto;
 import com.DBP.ticketing_backend.domain.event.entity.Event;
@@ -62,8 +61,8 @@ public class EventService {
                         .findById(requestDto.getPlaceId())
                         .orElseThrow(() -> new CustomException(ErrorCode.PLACE_NOT_FOUND));
 
-        if (requestDto.getTicketingStartAt().getMinute() != 0 ||
-            requestDto.getTicketingStartAt().getSecond() != 0) {
+        if (requestDto.getTicketingStartAt().getMinute() != 0
+                || requestDto.getTicketingStartAt().getSecond() != 0) {
             // ErrorCode에 "예매 오픈은 정각 단위로만 설정 가능합니다." 추가 필요 (예: ONLY_ON_THE_HOUR)
             throw new CustomException(ErrorCode.ONLY_ON_THE_HOUR);
         }
@@ -92,11 +91,16 @@ public class EventService {
 
         if (requestDto.getSeatForm() == SeatForm.ASSIGNED) {
             // 지정석: 구역 이름(Key)으로 매핑
-            Map<String, CreateEventRequestDto.SectionSetting> settingMap = requestDto.getSeatSettings().stream()
-                .collect(Collectors.toMap(CreateEventRequestDto.SectionSetting::getSectionName, s -> s));
+            Map<String, CreateEventRequestDto.SectionSetting> settingMap =
+                    requestDto.getSeatSettings().stream()
+                            .collect(
+                                    Collectors.toMap(
+                                            CreateEventRequestDto.SectionSetting::getSectionName,
+                                            s -> s));
 
             for (SeatTemplate template : templates) {
-                CreateEventRequestDto.SectionSetting setting = settingMap.get(template.getSection());
+                CreateEventRequestDto.SectionSetting setting =
+                        settingMap.get(template.getSection());
                 if (setting == null) throw new CustomException(ErrorCode.SECTION_SETTING_MISSING);
 
                 seatsToSave.add(createSeatEntity(savedEvent, template, setting));
@@ -107,7 +111,8 @@ public class EventService {
             if (requestDto.getSeatSettings().isEmpty()) {
                 throw new CustomException(ErrorCode.SECTION_SETTING_MISSING);
             }
-            CreateEventRequestDto.SectionSetting commonSetting = requestDto.getSeatSettings().get(0);
+            CreateEventRequestDto.SectionSetting commonSetting =
+                    requestDto.getSeatSettings().get(0);
 
             for (SeatTemplate template : templates) {
                 // 구역 이름 확인 안 함! 무조건 commonSetting 적용
@@ -119,14 +124,15 @@ public class EventService {
         return savedEvent.getEventId();
     }
 
-    private Seat createSeatEntity(Event event, SeatTemplate template, CreateEventRequestDto.SectionSetting setting) {
+    private Seat createSeatEntity(
+            Event event, SeatTemplate template, CreateEventRequestDto.SectionSetting setting) {
         return Seat.builder()
-            .event(event)
-            .template(template)
-            .level(setting.getSeatLevel())
-            .price(setting.getPrice())
-            .status(SeatStatus.AVAILABLE)
-            .build();
+                .event(event)
+                .template(template)
+                .level(setting.getSeatLevel())
+                .price(setting.getPrice())
+                .status(SeatStatus.AVAILABLE)
+                .build();
     }
 
     @Transactional(readOnly = true)

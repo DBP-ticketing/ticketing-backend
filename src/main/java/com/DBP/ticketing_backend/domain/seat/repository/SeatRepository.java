@@ -17,7 +17,7 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
 
     @Query(
             "SELECT s FROM Seat s WHERE s.event.eventId = :eventId ORDER BY s.level,"
-                + " s.template.row, s.template.column")
+                    + " s.template.row, s.template.column")
     List<Seat> findAllByEventId(@Param("eventId") Long eventId);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
