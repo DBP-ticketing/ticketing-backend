@@ -3,11 +3,14 @@ package com.DBP.ticketing_backend.domain.seat.service;
 import com.DBP.ticketing_backend.domain.seat.dto.SeatResponseDto;
 import com.DBP.ticketing_backend.domain.seat.entity.Seat;
 import com.DBP.ticketing_backend.domain.seat.repository.SeatRepository;
-import java.util.List;
-import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,9 +24,6 @@ public class SeatService {
         List<Seat> seats = seatRepository.findAllByEventId(eventId);
 
         // 2. DTO 변환
-        return seats.stream()
-            .map(SeatResponseDto::from)
-            .collect(Collectors.toList());
+        return seats.stream().map(SeatResponseDto::from).collect(Collectors.toList());
     }
-
 }

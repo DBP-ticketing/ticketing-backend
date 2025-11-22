@@ -21,12 +21,15 @@ import com.DBP.ticketing_backend.domain.users.entity.Users;
 import com.DBP.ticketing_backend.domain.users.repository.UsersRepository;
 import com.DBP.ticketing_backend.global.exception.CustomException;
 import com.DBP.ticketing_backend.global.exception.ErrorCode;
+
+import lombok.RequiredArgsConstructor;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -40,16 +43,21 @@ public class BookingService {
     private final BookedSeatHistoryRepository bookedSeatHistoryRepository;
 
     @Transactional
-    public BookingResponseDto createBooking(UsersDetails usersDetails, BookingRequestDto bookingRequestDto) {
+    public BookingResponseDto createBooking(
+            UsersDetails usersDetails, BookingRequestDto bookingRequestDto) {
 
         // 유저 조회
-        Users user = usersRepository.findById(usersDetails.getUserId())
-            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        Users user =
+                usersRepository
+                        .findById(usersDetails.getUserId())
+                        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         // 이벤트 조회
         Long eventId = bookingRequestDto.getEventId();
-        Event event = eventRepository.findById(eventId)
-            .orElseThrow(() -> new CustomException(ErrorCode.EVENT_NOT_FOUND));
+        Event event =
+                eventRepository
+                        .findById(eventId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.EVENT_NOT_FOUND));
 
         // 예매 가능 시간 및 상태 확인
         validateTicketingTime(event);
@@ -65,17 +73,21 @@ public class BookingService {
                 throw new CustomException(ErrorCode.INVALID_REQUEST);
             }
 
-            seat = seatRepository.findByIdWithLock(bookingRequestDto.getSeatId())
-                .orElseThrow(() -> new CustomException(ErrorCode.SEAT_NOT_FOUND));
+            seat =
+                    seatRepository
+                            .findByIdWithLock(bookingRequestDto.getSeatId())
+                            .orElseThrow(() -> new CustomException(ErrorCode.SEAT_NOT_FOUND));
 
             // 요청한 좌석의 이벤트와 일치하는지 확인
             if (!seat.getEvent().getEventId().equals(eventId)) {
                 throw new CustomException(ErrorCode.INVALID_REQUEST);
             }
-        // 자유석, 스탠딩석의 경우
+            // 자유석, 스탠딩석의 경우
         } else {
-            seat = seatRepository.findFirstByEvent_EventIdAndStatus(eventId, SeatStatus.AVAILABLE)
-                .orElseThrow(() -> new CustomException(ErrorCode.SOLD_OUT));
+            seat =
+                    seatRepository
+                            .findFirstByEvent_EventIdAndStatus(eventId, SeatStatus.AVAILABLE)
+                            .orElseThrow(() -> new CustomException(ErrorCode.SOLD_OUT));
         }
 
         // 좌석 상태 확인 및 업데이트
@@ -85,27 +97,26 @@ public class BookingService {
         seat.updateStatus(SeatStatus.RESERVED);
 
         // 예약 생성
-        Booking booking = Booking.builder()
-            .users(user)
-            .status(BookingStatus.PENDING) // 초기 상태: 결제 대기
-            .totalPrice(seat.getPrice())
-            .build();
+        Booking booking =
+                Booking.builder()
+                        .users(user)
+                        .status(BookingStatus.PENDING) // 초기 상태: 결제 대기
+                        .totalPrice(seat.getPrice())
+                        .build();
         Booking savedBooking = bookingRepository.save(booking);
 
         // 예약된 좌석 정보 생성
-        BookedSeat bookedSeat = BookedSeat.builder()
-            .booking(savedBooking)
-            .seat(seat)
-            .build();
+        BookedSeat bookedSeat = BookedSeat.builder().booking(savedBooking).seat(seat).build();
         BookedSeat savedBookedSeat = bookedSeatRepository.save(bookedSeat);
 
         // 예약된 좌석 이력 생성
-        BookedSeatHistory history = BookedSeatHistory.builder()
-            .bookedSeat(savedBookedSeat)
-            .booking(savedBooking)
-            .previousStatus(null) // 최초 생성이므로 이전 상태 없음
-            .currentStatus(BookingStatus.PENDING)
-            .build();
+        BookedSeatHistory history =
+                BookedSeatHistory.builder()
+                        .bookedSeat(savedBookedSeat)
+                        .booking(savedBooking)
+                        .previousStatus(null) // 최초 생성이므로 이전 상태 없음
+                        .currentStatus(BookingStatus.PENDING)
+                        .build();
 
         bookedSeatHistoryRepository.save(history);
 
@@ -115,16 +126,20 @@ public class BookingService {
     @Transactional
     public BookingResponseDto cancelBooking(UsersDetails usersDetails, Long bookingId) {
 
-        Booking booking = bookingRepository.findById(bookingId)
-            .orElseThrow(() -> new CustomException(ErrorCode.BOOKING_NOT_FOUND));
+        Booking booking =
+                bookingRepository
+                        .findById(bookingId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.BOOKING_NOT_FOUND));
 
         // 예약한 유저와 요청한 유저가 같은지 확인
         if (!booking.getUsers().getUserId().equals(usersDetails.getUserId())) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_ACCESS);
         }
 
-        BookedSeat bookedSeat = bookedSeatRepository.findByBooking(booking)
-            .orElseThrow(() -> new CustomException(ErrorCode.SEAT_NOT_FOUND));
+        BookedSeat bookedSeat =
+                bookedSeatRepository
+                        .findByBooking(booking)
+                        .orElseThrow(() -> new CustomException(ErrorCode.SEAT_NOT_FOUND));
 
         // 상태에 따른 분기 처리
         if (booking.getStatus() == BookingStatus.PENDING) {
@@ -155,7 +170,8 @@ public class BookingService {
         changeBookingStatusWithHistory(booking, bookedSeat, BookingStatus.CANCELLED);
     }
 
-    private void changeBookingStatusWithHistory(Booking booking, BookedSeat bookedSeat, BookingStatus newStatus) {
+    private void changeBookingStatusWithHistory(
+            Booking booking, BookedSeat bookedSeat, BookingStatus newStatus) {
         // 1. 이전 상태 기록
         BookingStatus previousStatus = booking.getStatus();
 
@@ -163,12 +179,13 @@ public class BookingService {
         booking.updateStatus(newStatus);
 
         // 3. 히스토리 저장
-        BookedSeatHistory history = BookedSeatHistory.builder()
-            .bookedSeat(bookedSeat)
-            .booking(booking)
-            .previousStatus(previousStatus) // 변경 전 상태 (예: CONFIRMED)
-            .currentStatus(newStatus)     // 변경 후 상태 (예: CANCELLED)
-            .build();
+        BookedSeatHistory history =
+                BookedSeatHistory.builder()
+                        .bookedSeat(bookedSeat)
+                        .booking(booking)
+                        .previousStatus(previousStatus) // 변경 전 상태 (예: CONFIRMED)
+                        .currentStatus(newStatus) // 변경 후 상태 (예: CANCELLED)
+                        .build();
 
         bookedSeatHistoryRepository.save(history);
     }
@@ -177,8 +194,10 @@ public class BookingService {
     public BookingResponseDto payBooking(UsersDetails usersDetails, Long bookingId) {
 
         // 예약 조회
-        Booking booking = bookingRepository.findById(bookingId)
-            .orElseThrow(() -> new CustomException(ErrorCode.BOOKING_NOT_FOUND));
+        Booking booking =
+                bookingRepository
+                        .findById(bookingId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.BOOKING_NOT_FOUND));
 
         // 예약한 유저와 요청한 유저가 같은지 확인
         if (!booking.getUsers().getUserId().equals(usersDetails.getUserId())) {
@@ -191,8 +210,10 @@ public class BookingService {
         }
 
         // 예약된 좌석 조회
-        BookedSeat bookedSeat = bookedSeatRepository.findByBooking(booking)
-            .orElseThrow(() -> new CustomException(ErrorCode.SEAT_NOT_FOUND));
+        BookedSeat bookedSeat =
+                bookedSeatRepository
+                        .findByBooking(booking)
+                        .orElseThrow(() -> new CustomException(ErrorCode.SEAT_NOT_FOUND));
 
         Seat seat = bookedSeat.getSeat();
 
@@ -223,8 +244,10 @@ public class BookingService {
     @Transactional(readOnly = true) // 조회 전용 최적화
     public List<BookingResponseDto> getMyBookings(UsersDetails usersDetails, BookingStatus status) {
 
-        Users user = usersRepository.findById(usersDetails.getUserId())
-            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        Users user =
+                usersRepository
+                        .findById(usersDetails.getUserId())
+                        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         List<Booking> bookings;
 
@@ -236,14 +259,20 @@ public class BookingService {
 
         // Entity -> DTO 변환
         return bookings.stream()
-            .map(booking -> {
-                // BookedSeat를 통해 Seat 정보 가져오기
-                BookedSeat bookedSeat = bookedSeatRepository.findByBooking(booking)
-                    .orElseThrow(() -> new CustomException(ErrorCode.SEAT_NOT_FOUND));
+                .map(
+                        booking -> {
+                            // BookedSeat를 통해 Seat 정보 가져오기
+                            BookedSeat bookedSeat =
+                                    bookedSeatRepository
+                                            .findByBooking(booking)
+                                            .orElseThrow(
+                                                    () ->
+                                                            new CustomException(
+                                                                    ErrorCode.SEAT_NOT_FOUND));
 
-                return BookingResponseDto.from(booking, bookedSeat.getSeat());
-            })
-            .collect(Collectors.toList());
+                            return BookingResponseDto.from(booking, bookedSeat.getSeat());
+                        })
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -252,15 +281,16 @@ public class BookingService {
         LocalDateTime fiveMinutesAgo = LocalDateTime.now().minusMinutes(5);
 
         // 만료된 예약들 조회 (PENDING 상태 & 5분 지남)
-        List<Booking> expiredBookings = bookingRepository.findByStatusAndCreatedAtBefore(
-            BookingStatus.PENDING,
-            fiveMinutesAgo
-        );
+        List<Booking> expiredBookings =
+                bookingRepository.findByStatusAndCreatedAtBefore(
+                        BookingStatus.PENDING, fiveMinutesAgo);
 
         // 하나씩 취소 처리
         for (Booking booking : expiredBookings) {
-            BookedSeat bookedSeat = bookedSeatRepository.findByBooking(booking)
-                .orElseThrow(() -> new CustomException(ErrorCode.SEAT_NOT_FOUND));
+            BookedSeat bookedSeat =
+                    bookedSeatRepository
+                            .findByBooking(booking)
+                            .orElseThrow(() -> new CustomException(ErrorCode.SEAT_NOT_FOUND));
             cancelPendingBooking(booking, bookedSeat);
         }
     }

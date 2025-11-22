@@ -1,8 +1,10 @@
 package com.DBP.ticketing_backend.domain.booking.schduler;
 
 import com.DBP.ticketing_backend.domain.booking.service.BookingService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -18,5 +20,4 @@ public class BookingScheduler {
         log.info("결제 미진행 예약 자동 취소 스케줄러 실행");
         bookingService.cancelExpiredBookings();
     }
-
 }

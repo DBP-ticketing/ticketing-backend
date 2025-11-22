@@ -10,5 +10,4 @@ public class BookingRequestDto {
 
     // 스탠딩/자유석 예매 시 필수 (빈자리 자동 배정용)
     private Long eventId;
-
 }
