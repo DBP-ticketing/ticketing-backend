@@ -11,6 +11,7 @@ public enum ErrorCode {
     NOT_A_PENDING_HOST(HttpStatus.BAD_REQUEST, "대기중인 호스트가 아닙니다."),
     NOT_AN_ACTIVATED_HOST(HttpStatus.BAD_REQUEST, "활성화된 호스트가 아닙니다."),
     INVALID_EMAIL_OR_PASSWORD(HttpStatus.BAD_REQUEST, "이메일 또는 비밀번호가 올바르지 않습니다."),
+    INVALID_TICKET_OPEN_TIME(HttpStatus.BAD_REQUEST, "예매 오픈 시간은 공연 시간보다 빨라야 합니다."),
 
     // 401 Unauthorized: 인증되지 않은 사용자
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증이 필요한 요청입니다."),
@@ -23,6 +24,10 @@ public enum ErrorCode {
     HOST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 호스트를 찾을 수 없습니다."),
     TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 토큰을 찾을 수 없습니다."),
     PLACE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 장소를 찾을 수 없습니다."),
+    TEMPLATE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 좌석 템플릿을 찾을 수 없습니다."),
+    SECTION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 섹션을 찾을 수 없습니다."),
+    SECTION_SETTING_MISSING(HttpStatus.NOT_FOUND, "섹션 설정이 누락되었습니다."),
+    EVENT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 공연을 찾을 수 없습니다."),
 
     // 409 Conflict: 충돌
     DUPLICATE_MEMBER_EMAIL(HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다."),

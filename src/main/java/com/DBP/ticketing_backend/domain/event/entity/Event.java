@@ -53,6 +53,9 @@ public class Event extends BaseEntity {
     @Column(nullable = false)
     private LocalDateTime date;
 
+    @Column(nullable = false)
+    private LocalDateTime ticketingStartAt;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private SeatForm seatForm;
@@ -68,6 +71,7 @@ public class Event extends BaseEntity {
             String eventName,
             EventCategory category,
             LocalDateTime date,
+            LocalDateTime ticketingStartAt,
             SeatForm seatForm,
             EventStatus status) {
         this.host = host;
@@ -75,7 +79,12 @@ public class Event extends BaseEntity {
         this.eventName = eventName;
         this.category = category;
         this.date = date;
+        this.ticketingStartAt = ticketingStartAt;
         this.seatForm = seatForm;
         this.status = status != null ? status : EventStatus.SCHEDULED;
+    }
+
+    public void updateStatus(EventStatus eventStatus) {
+        this.status = eventStatus;
     }
 }

@@ -41,8 +41,9 @@ public class SecurityConfig {
                             auth.requestMatchers(
                                             "/api/auth/signup/**", // 회원가입
                                             "/api/auth/login", // 로그인
-                                            "/api/auth/refresh" // 토큰 재발급
-                                            )
+                                            "/api/auth/refresh", // 토큰 재발급
+                                            "/api/events",
+                                            "/api/events/{eventId}")
                                     .permitAll();
 
                             // 로그아웃은 인증 필요
