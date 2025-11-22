@@ -47,4 +47,11 @@ public class Booking extends BaseEntity {
         this.status = status != null ? status : BookingStatus.PENDING;
         this.totalPrice = totalPrice;
     }
+
+    public void updateStatus(BookingStatus status) {
+        if (status == null) {
+            throw new IllegalArgumentException("예약 상태는 null일 수 없습니다.");
+        }
+        this.status = status;
+    }
 }

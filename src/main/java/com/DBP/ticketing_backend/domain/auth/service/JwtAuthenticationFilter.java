@@ -49,13 +49,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                     // 5. 이메일로 사용자 정보 조회
                     UserDetails userDetails = authService.loadUserByUsername(email);
-                    log.info("=================================================");
-                    log.info("🚦 Security Filter Check");
-                    log.info("1. Request URI      : {}", requestURI);
-                    log.info("2. Authenticated User : {}", email);
-                    // 이 부분이 [ROLE_ADMIN] 인지 [ADMIN] 인지 확인해야 합니다.
-                    log.info("3. Loaded Authorities : {}", userDetails.getAuthorities());
-                    log.info("=================================================");
 
                     // 6. Authentication 객체 생성
                     UsernamePasswordAuthenticationToken authentication =

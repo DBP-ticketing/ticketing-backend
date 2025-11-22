@@ -2,11 +2,11 @@ package com.DBP.ticketing_backend.domain.event.service;
 
 import com.DBP.ticketing_backend.domain.auth.dto.UsersDetails;
 import com.DBP.ticketing_backend.domain.event.dto.CreateEventRequestDto;
-import com.DBP.ticketing_backend.domain.event.dto.CreateEventRequestDto.SectionSetting;
 import com.DBP.ticketing_backend.domain.event.dto.EventDetailResponseDto;
 import com.DBP.ticketing_backend.domain.event.dto.EventListResponseDto;
 import com.DBP.ticketing_backend.domain.event.entity.Event;
 import com.DBP.ticketing_backend.domain.event.enums.EventStatus;
+import com.DBP.ticketing_backend.domain.event.enums.SeatForm;
 import com.DBP.ticketing_backend.domain.event.repository.EventRepository;
 import com.DBP.ticketing_backend.domain.host.entity.Host;
 import com.DBP.ticketing_backend.domain.host.repository.HostRepository;
@@ -61,9 +61,10 @@ public class EventService {
                         .findById(requestDto.getPlaceId())
                         .orElseThrow(() -> new CustomException(ErrorCode.PLACE_NOT_FOUND));
 
-        if (requestDto.getTicketingStartAt().isAfter(requestDto.getDate())) {
-            throw new CustomException(ErrorCode.INVALID_TICKET_OPEN_TIME);
-            // ErrorCode에 "예매 오픈 시간은 공연 시간보다 빨라야 합니다." 추가 필요
+        if (requestDto.getTicketingStartAt().getMinute() != 0
+                || requestDto.getTicketingStartAt().getSecond() != 0) {
+            // ErrorCode에 "예매 오픈은 정각 단위로만 설정 가능합니다." 추가 필요 (예: ONLY_ON_THE_HOUR)
+            throw new CustomException(ErrorCode.ONLY_ON_THE_HOUR);
         }
 
         Event event =
@@ -83,43 +84,55 @@ public class EventService {
         List<SeatTemplate> templates = seatTemplateRepository.findAllByPlace(place);
 
         if (templates.isEmpty()) {
-            throw new CustomException(ErrorCode.TEMPLATE_NOT_FOUND);
+            throw new CustomException(ErrorCode.TEMPLATE_NOT_FOUND); // "좌석 템플릿이 존재하지 않습니다."
         }
-
-        Map<String, SectionSetting> settingMap =
-                requestDto.getSeatSettings().stream()
-                        .collect(
-                                Collectors.toMap(
-                                        CreateEventRequestDto.SectionSetting::getSectionName,
-                                        setting -> setting));
 
         List<Seat> seatsToSave = new ArrayList<>();
 
-        for (SeatTemplate template : templates) {
-            String sectionName = template.getSection();
+        if (requestDto.getSeatForm() == SeatForm.ASSIGNED) {
+            // 지정석: 구역 이름(Key)으로 매핑
+            Map<String, CreateEventRequestDto.SectionSetting> settingMap =
+                    requestDto.getSeatSettings().stream()
+                            .collect(
+                                    Collectors.toMap(
+                                            CreateEventRequestDto.SectionSetting::getSectionName,
+                                            s -> s));
 
-            CreateEventRequestDto.SectionSetting setting = settingMap.get(sectionName);
+            for (SeatTemplate template : templates) {
+                CreateEventRequestDto.SectionSetting setting =
+                        settingMap.get(template.getSection());
+                if (setting == null) throw new CustomException(ErrorCode.SECTION_SETTING_MISSING);
 
-            if (setting == null) {
-                throw new CustomException(
-                        ErrorCode.SECTION_SETTING_MISSING); // "해당 구역의 가격 설정이 없습니다."
+                seatsToSave.add(createSeatEntity(savedEvent, template, setting));
             }
+        } else {
+            // 스탠딩/자유석: "대표 설정 하나"를 모든 템플릿에 일괄 적용
+            // 좌석 레벨과 가격을 통일
+            if (requestDto.getSeatSettings().isEmpty()) {
+                throw new CustomException(ErrorCode.SECTION_SETTING_MISSING);
+            }
+            CreateEventRequestDto.SectionSetting commonSetting =
+                    requestDto.getSeatSettings().get(0);
 
-            Seat seat =
-                    Seat.builder()
-                            .event(savedEvent)
-                            .template(template)
-                            .level(setting.getSeatLevel())
-                            .price(setting.getPrice())
-                            .status(SeatStatus.AVAILABLE)
-                            .build();
-
-            seatsToSave.add(seat);
+            for (SeatTemplate template : templates) {
+                // 구역 이름 확인 안 함! 무조건 commonSetting 적용
+                seatsToSave.add(createSeatEntity(savedEvent, template, commonSetting));
+            }
         }
 
         seatRepository.saveAll(seatsToSave);
-
         return savedEvent.getEventId();
+    }
+
+    private Seat createSeatEntity(
+            Event event, SeatTemplate template, CreateEventRequestDto.SectionSetting setting) {
+        return Seat.builder()
+                .event(event)
+                .template(template)
+                .level(setting.getSeatLevel())
+                .price(setting.getPrice())
+                .status(SeatStatus.AVAILABLE)
+                .build();
     }
 
     @Transactional(readOnly = true)
