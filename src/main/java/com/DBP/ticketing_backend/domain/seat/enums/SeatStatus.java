@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum SeatStatus {
     AVAILABLE("예매 가능", "예매 가능한 좌석"),
+    RESERVED("예약 중", "예약되었으나 결제 대기 중인 좌석"),
     SOLD("판매 완료", "결제 완료된 좌석"),
     UNAVAILABLE("판매 불가", "판매하지 않는 좌석");
 

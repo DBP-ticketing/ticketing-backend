@@ -60,4 +60,11 @@ public class Seat extends BaseEntity {
         this.price = price;
         this.status = status != null ? status : SeatStatus.AVAILABLE;
     }
+
+    public void updateStatus(SeatStatus status) {
+        if (status == null) {
+            throw new IllegalArgumentException("좌석 상태는 null일 수 없습니다.");
+        }
+        this.status = status;
+    }
 }
