@@ -51,6 +51,12 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+	// 1. Spring Data Redis (기본 Redis 라이브러리)
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	// 2. Redisson (분산 락 구현을 위한 강력한 클라이언트)
+	implementation 'org.redisson:redisson-spring-boot-starter:3.23.2'
 }
 
 tasks.named('test') {
