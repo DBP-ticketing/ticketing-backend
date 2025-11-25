@@ -4,6 +4,7 @@ import com.DBP.ticketing_backend.domain.auth.dto.UsersDetails;
 import com.DBP.ticketing_backend.domain.booking.dto.BookingRequestDto;
 import com.DBP.ticketing_backend.domain.booking.dto.BookingResponseDto;
 import com.DBP.ticketing_backend.domain.booking.enums.BookingStatus;
+import com.DBP.ticketing_backend.domain.booking.facade.BookingFacade;
 import com.DBP.ticketing_backend.domain.booking.service.BookingService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,13 +32,14 @@ import java.util.List;
 public class BookingController {
 
     private final BookingService bookingService;
+    private final BookingFacade bookingFacade;
 
     @Operation(summary = "예매 생성", description = "이벤트 혹은 좌석 정보로 이벤트를 예매합니다.")
     @PostMapping
     public ResponseEntity<BookingResponseDto> createBooking(
             @AuthenticationPrincipal UsersDetails usersDetails,
             @RequestBody BookingRequestDto bookingRequestDto) {
-        return ResponseEntity.ok(bookingService.createBooking(usersDetails, bookingRequestDto));
+        return ResponseEntity.ok(bookingFacade.createBooking(usersDetails, bookingRequestDto));
     }
 
     @Operation(summary = "예매 취소", description = "결제 대기 혹은 예매 완료된 예매를 취소합니다.")
