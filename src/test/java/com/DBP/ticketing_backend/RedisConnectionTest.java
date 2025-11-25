@@ -7,15 +7,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest
-@TestPropertySource(properties = {
-    "jwt.secret=dGhpcyBpcyBhIHZlcnkgbG9uZyBzZWNyZXQga2V5IGZvciBqd3QgdGVzdGluZw==",
-    "jwt.access-token-expiration=3600000",
-    "jwt.refresh-token-expiration=86400000"
-})
+@TestPropertySource(
+        properties = {
+            "jwt.secret=dGhpcyBpcyBhIHZlcnkgbG9uZyBzZWNyZXQga2V5IGZvciBqd3QgdGVzdGluZw==",
+            "jwt.access-token-expiration=3600000",
+            "jwt.refresh-token-expiration=86400000"
+        })
 public class RedisConnectionTest {
 
-    @Autowired
-    private RedissonClient redissonClient;
+    @Autowired private RedissonClient redissonClient;
 
     @Test
     void redisConnectionTest() {
