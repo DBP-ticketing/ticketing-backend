@@ -1,8 +1,10 @@
 package com.DBP.ticketing_backend.domain.booking.dto;
 
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class BookingRequestDto {
 
     // 지정석 예매 시 필수
