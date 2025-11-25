@@ -16,48 +16,40 @@ import com.DBP.ticketing_backend.domain.seat.enums.SeatStatus;
 import com.DBP.ticketing_backend.domain.seat.repository.SeatRepository;
 import com.DBP.ticketing_backend.domain.users.entity.Users;
 import com.DBP.ticketing_backend.domain.users.enums.UsersRole;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
+
 @SpringBootTest
 @TestPropertySource(
-    properties = {
-        "jwt.secret=dGhpcyBpcyBhIHZlcnkgbG9uZyBzZWNyZXQga2V5IGZvciBqd3QgdGVzdGluZw==",
-        "jwt.access-token-expiration=3600000",
-        "jwt.refresh-token-expiration=86400000"
-    })
+        properties = {
+            "jwt.secret=dGhpcyBpcyBhIHZlcnkgbG9uZyBzZWNyZXQga2V5IGZvciBqd3QgdGVzdGluZw==",
+            "jwt.access-token-expiration=3600000",
+            "jwt.refresh-token-expiration=86400000"
+        })
 public class BookingConcurrencyTest {
 
-    @Autowired
-    private BookingFacade bookingFacade;
-    @Autowired
-    private BookedSeatRepository bookedSeatRepository;
-    @Autowired
-    private BookingRepository bookingRepository;
-    @Autowired
-    private BookedSeatHistoryRepository bookedSeatHistoryRepository;
-    @Autowired
-    private SeatRepository seatRepository;
-
+    @Autowired private BookingFacade bookingFacade;
+    @Autowired private BookedSeatRepository bookedSeatRepository;
+    @Autowired private BookingRepository bookingRepository;
+    @Autowired private BookedSeatHistoryRepository bookedSeatHistoryRepository;
+    @Autowired private SeatRepository seatRepository;
 
     @Test
     void 지정석_동시예매_100명_테스트() throws InterruptedException {
         // given
 
-        UsersDetails mockUser = new UsersDetails(
-            Users.builder()
-                .userId(3L)
-                .role(UsersRole.ROLE_USER)
-                .build()
-        );
+        UsersDetails mockUser =
+                new UsersDetails(Users.builder().userId(3L).role(UsersRole.ROLE_USER).build());
 
         int threadCount = 100; // 100명이 동시에
         ExecutorService executorService = Executors.newFixedThreadPool(32);
@@ -68,24 +60,26 @@ public class BookingConcurrencyTest {
         AtomicInteger failCount = new AtomicInteger();
 
         // 테스트용 요청 DTO
-        BookingRequestDto request = BookingRequestDto.builder()
-            .eventId(3L) // 9999년에 진행되는 이벤트
-            .seatId(2001L)
-            .build();
+        BookingRequestDto request =
+                BookingRequestDto.builder()
+                        .eventId(3L) // 9999년에 진행되는 이벤트
+                        .seatId(2001L)
+                        .build();
 
         // when
         for (int i = 0; i < threadCount; i++) {
-            executorService.submit(() -> {
-                try {
-                    bookingFacade.createBooking(mockUser, request);
-                    successCount.getAndIncrement(); // 성공하면 +1
-                } catch (Exception e) {
-                    failCount.getAndIncrement(); // 실패(이미 예약됨)하면 +1
-                    System.out.println("예매 실패: " + e.getMessage());
-                } finally {
-                    latch.countDown(); // 스레드 하나 끝남
-                }
-            });
+            executorService.submit(
+                    () -> {
+                        try {
+                            bookingFacade.createBooking(mockUser, request);
+                            successCount.getAndIncrement(); // 성공하면 +1
+                        } catch (Exception e) {
+                            failCount.getAndIncrement(); // 실패(이미 예약됨)하면 +1
+                            System.out.println("예매 실패: " + e.getMessage());
+                        } finally {
+                            latch.countDown(); // 스레드 하나 끝남
+                        }
+                    });
         }
 
         latch.await(); // 100명이 다 끝날 때까지 대기
@@ -113,15 +107,21 @@ public class BookingConcurrencyTest {
         seatRepository.save(seat);
 
         // 4. 테스트로 인해 생긴 예매 내역 삭제
-        List<BookedSeat> bookedSeats = bookedSeatRepository.findAll().stream()
-            .filter(bs -> bs.getSeat().getSeatId().equals(targetSeatId))
-            .toList();
+        List<BookedSeat> bookedSeats =
+                bookedSeatRepository.findAll().stream()
+                        .filter(bs -> bs.getSeat().getSeatId().equals(targetSeatId))
+                        .toList();
 
         for (BookedSeat bs : bookedSeats) {
             // History 삭제
-            List<BookedSeatHistory> histories = bookedSeatHistoryRepository.findAll().stream()
-                .filter(h -> h.getBookedSeat().getBookedSeatId().equals(bs.getBookedSeatId()))
-                .toList();
+            List<BookedSeatHistory> histories =
+                    bookedSeatHistoryRepository.findAll().stream()
+                            .filter(
+                                    h ->
+                                            h.getBookedSeat()
+                                                    .getBookedSeatId()
+                                                    .equals(bs.getBookedSeatId()))
+                            .toList();
             bookedSeatHistoryRepository.deleteAll(histories);
 
             // Booking 찾기
@@ -134,5 +134,4 @@ public class BookingConcurrencyTest {
             bookingRepository.delete(booking);
         }
     }
-
 }

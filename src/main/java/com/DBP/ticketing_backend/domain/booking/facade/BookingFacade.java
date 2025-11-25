@@ -6,12 +6,15 @@ import com.DBP.ticketing_backend.domain.booking.dto.BookingResponseDto;
 import com.DBP.ticketing_backend.domain.booking.service.BookingService;
 import com.DBP.ticketing_backend.global.exception.CustomException;
 import com.DBP.ticketing_backend.global.exception.ErrorCode;
-import java.util.concurrent.TimeUnit;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Component;
+
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Component
@@ -21,7 +24,8 @@ public class BookingFacade {
     private final RedissonClient redissonClient;
     private final BookingService bookingService;
 
-    public BookingResponseDto createBooking(UsersDetails usersDetails, BookingRequestDto requestDto) {
+    public BookingResponseDto createBooking(
+            UsersDetails usersDetails, BookingRequestDto requestDto) {
 
         // 1. 지정석 예매인 경우 (seatId가 존재함) -> 분산 락 적용
         if (requestDto.getSeatId() != null) {
@@ -32,7 +36,8 @@ public class BookingFacade {
         return bookingService.createBooking(usersDetails, requestDto);
     }
 
-    private BookingResponseDto createAssignedBookingWithLock(UsersDetails usersDetails, BookingRequestDto requestDto) {
+    private BookingResponseDto createAssignedBookingWithLock(
+            UsersDetails usersDetails, BookingRequestDto requestDto) {
         Long seatId = requestDto.getSeatId();
 
         // 락 Key 생성 (유니크)
@@ -65,5 +70,4 @@ public class BookingFacade {
             }
         }
     }
-
 }
