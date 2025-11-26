@@ -47,8 +47,7 @@ public class SecurityConfig {
                                             "/api/seat/**",
                                             "/swagger-ui/**",
                                             "/v3/api-docs/**",
-                                            "/webjars/**"
-                                )
+                                            "/webjars/**")
                                     .permitAll();
 
                             // 로그아웃은 인증 필요
