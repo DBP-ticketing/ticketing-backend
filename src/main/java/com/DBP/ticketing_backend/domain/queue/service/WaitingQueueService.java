@@ -1,6 +1,7 @@
 package com.DBP.ticketing_backend.domain.queue.service;
 
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 

@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class QueueResponseDto {
-    private Long rank;      // 내 대기 순번
+    private Long rank; // 내 대기 순번
     private boolean active; // 입장 가능 여부
 }
