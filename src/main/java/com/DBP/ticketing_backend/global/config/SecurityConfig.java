@@ -44,7 +44,11 @@ public class SecurityConfig {
                                             "/api/auth/refresh", // 토큰 재발급
                                             "/api/events",
                                             "/api/events/{eventId}",
-                                            "/api/seat/**")
+                                            "/api/seat/**",
+                                            "/swagger-ui/**",
+                                            "/v3/api-docs/**",
+                                            "/webjars/**"
+                                )
                                     .permitAll();
 
                             // 로그아웃은 인증 필요
