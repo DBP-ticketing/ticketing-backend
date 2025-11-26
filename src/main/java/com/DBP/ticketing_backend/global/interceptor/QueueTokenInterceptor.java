@@ -1,7 +1,7 @@
 package com.DBP.ticketing_backend.global.interceptor;
 
-import com.DBP.ticketing_backend.domain.queue.service.WaitingQueueService;
 import com.DBP.ticketing_backend.global.exception.CustomException;
+import com.DBP.ticketing_backend.domain.queue.service.WaitingQueueService;
 import com.DBP.ticketing_backend.global.exception.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
