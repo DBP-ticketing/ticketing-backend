@@ -24,6 +24,7 @@ import com.DBP.ticketing_backend.global.exception.ErrorCode;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +43,7 @@ public class EventService {
     private final PlaceRepository placeRepository;
     private final SeatTemplateRepository seatTemplateRepository;
     private final SeatRepository seatRepository;
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Transactional
     public Long createEvent(CreateEventRequestDto requestDto, UsersDetails usersDetails) {
@@ -159,5 +161,64 @@ public class EventService {
                         .orElseThrow(() -> new CustomException(ErrorCode.EVENT_NOT_FOUND));
 
         return EventDetailResponseDto.from(event);
+    }
+
+    @Transactional
+    public void updateEventStatus(Long eventId, EventStatus newStatus) {
+        Event event =
+                eventRepository
+                        .findById(eventId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.EVENT_NOT_FOUND));
+
+        // 1. DB 상태 변경
+        event.updateStatus(newStatus);
+
+        // 2. 예매 불가능 상태가 되면 Redis 대기열 데이터 삭제 (메모리 확보)
+        if (newStatus == EventStatus.CLOSED
+                || newStatus == EventStatus.CANCELLED
+                || newStatus == EventStatus.COMPLETED) {
+
+            // 대기열(Waiting) 삭제
+            redisTemplate.delete("waiting_queue:" + eventId);
+
+            // 입장객(Active) 삭제
+            // (선택사항: 이미 들어온 사람은 결제하게 둘 건지, 강제로 쫓아낼 건지 정책에 따라 결정)
+            // 보통 취소/종료면 쫓아내는 게 맞고, 마감(CLOSED)이면 들어온 사람은 결제하게 둬도 됨.
+            redisTemplate.delete("active_tokens:" + eventId);
+        }
+    }
+
+    @Transactional
+    public void openEvent(Long eventId) {
+        Event event =
+                eventRepository
+                        .findById(eventId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.EVENT_NOT_FOUND));
+
+        event.updateStatus(EventStatus.OPEN);
+    }
+
+    @Transactional
+    public void closeEndedEvent(Long eventId) {
+        Event event =
+                eventRepository
+                        .findById(eventId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.EVENT_NOT_FOUND));
+
+        // 공통 로직 호출 (CLOSED로 변경)
+        processStatusChange(event, EventStatus.CLOSED);
+    }
+
+    private void processStatusChange(Event event, EventStatus status) {
+        event.updateStatus(status);
+
+        // 종료/취소/마감 상태라면 대기열 삭제
+        if (status == EventStatus.CLOSED
+                || status == EventStatus.CANCELLED
+                || status == EventStatus.COMPLETED) {
+            String eventIdStr = event.getEventId().toString();
+            redisTemplate.delete("waiting_queue:" + eventIdStr);
+            redisTemplate.delete("active_tokens:" + eventIdStr);
+        }
     }
 }

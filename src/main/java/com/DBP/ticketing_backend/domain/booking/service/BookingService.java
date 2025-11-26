@@ -14,6 +14,7 @@ import com.DBP.ticketing_backend.domain.event.entity.Event;
 import com.DBP.ticketing_backend.domain.event.enums.EventStatus;
 import com.DBP.ticketing_backend.domain.event.enums.SeatForm;
 import com.DBP.ticketing_backend.domain.event.repository.EventRepository;
+import com.DBP.ticketing_backend.domain.queue.service.WaitingQueueService;
 import com.DBP.ticketing_backend.domain.seat.entity.Seat;
 import com.DBP.ticketing_backend.domain.seat.enums.SeatStatus;
 import com.DBP.ticketing_backend.domain.seat.repository.SeatRepository;
@@ -41,6 +42,7 @@ public class BookingService {
     private final BookingRepository bookingRepository;
     private final BookedSeatRepository bookedSeatRepository;
     private final BookedSeatHistoryRepository bookedSeatHistoryRepository;
+    private final WaitingQueueService waitingQueueService;
 
     @Transactional
     public BookingResponseDto createBooking(
@@ -87,7 +89,8 @@ public class BookingService {
         } else {
             seat =
                     seatRepository
-                            .findFirstByEvent_EventIdAndStatus(eventId, SeatStatus.AVAILABLE)
+                            .findFirstByEvent_EventIdAndStatusOrderBySeatIdAscWithLock(
+                                    eventId, SeatStatus.AVAILABLE)
                             .orElseThrow(() -> new CustomException(ErrorCode.SOLD_OUT));
         }
 
@@ -150,6 +153,10 @@ public class BookingService {
         } else {
             throw new CustomException(ErrorCode.INVALID_BOOKING_STATUS);
         }
+
+        waitingQueueService.popQueue(
+                bookedSeat.getSeat().getEvent().getEventId(), usersDetails.getUserId());
+
         return BookingResponseDto.from(booking, bookedSeat.getSeat());
     }
 
@@ -227,6 +234,8 @@ public class BookingService {
         seat.updateStatus(SeatStatus.SOLD);
         changeBookingStatusWithHistory(booking, bookedSeat, BookingStatus.CONFIRMED);
 
+        waitingQueueService.popQueue(seat.getEvent().getEventId(), usersDetails.getUserId());
+
         return BookingResponseDto.from(booking, seat);
     }
 
@@ -293,6 +302,8 @@ public class BookingService {
                             .findByBooking(booking)
                             .orElseThrow(() -> new CustomException(ErrorCode.SEAT_NOT_FOUND));
             cancelPendingBooking(booking, bookedSeat);
+            waitingQueueService.popQueue(
+                    bookedSeat.getSeat().getEvent().getEventId(), booking.getUsers().getUserId());
         }
     }
 }

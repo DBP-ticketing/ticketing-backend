@@ -3,7 +3,10 @@ package com.DBP.ticketing_backend.domain.seat.repository;
 import com.DBP.ticketing_backend.domain.seat.entity.Seat;
 import com.DBP.ticketing_backend.domain.seat.enums.SeatStatus;
 
+import jakarta.persistence.LockModeType;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -22,4 +25,11 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
     //    Optional<Seat> findByIdWithLock(Long seatId);
 
     Optional<Seat> findFirstByEvent_EventIdAndStatus(Long eventId, SeatStatus seatStatus);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query(
+            "select s from Seat s where s.event.eventId = :eventId and s.status = :status order by"
+                    + " s.seatId asc limit 1")
+    Optional<Seat> findFirstByEvent_EventIdAndStatusOrderBySeatIdAscWithLock(
+            @Param("eventId") Long eventId, @Param("status") SeatStatus status);
 }
