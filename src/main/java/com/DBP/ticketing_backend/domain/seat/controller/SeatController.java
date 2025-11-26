@@ -29,9 +29,9 @@ public class SeatController {
     private final SeatService seatService;
 
     @Operation(
-        summary = "좌석 조회",
-        description =
-            """
+            summary = "좌석 조회",
+            description =
+                    """
             특정 이벤트의 전체 좌석 상태를 조회합니다.
 
             **권한:**
@@ -39,14 +39,12 @@ public class SeatController {
 
             **참고:**
             - 이벤트 ID가 유효하지 않으면 404 에러가 반환됩니다.
-            """
-    )
+            """)
     @ApiResponses({
         @ApiResponse(
-            responseCode = "200",
-            description = "조회 성공",
-            content = @Content(schema = @Schema(implementation = SeatResponseDto.class))
-        ),
+                responseCode = "200",
+                description = "조회 성공",
+                content = @Content(schema = @Schema(implementation = SeatResponseDto.class))),
         @ApiResponse(responseCode = "404", description = "이벤트를 찾을 수 없음")
     })
     @GetMapping("/{eventId}")

@@ -33,9 +33,9 @@ public class PlaceController {
     private final PlaceService placeService;
 
     @Operation(
-        summary = "장소 생성",
-        description =
-            """
+            summary = "장소 생성",
+            description =
+                    """
             새로운 장소를 생성합니다.
 
             **권한:**
@@ -43,8 +43,7 @@ public class PlaceController {
 
             **참고:**
             - 요청 본문에 장소 정보를 포함해야 합니다.
-            """
-    )
+            """)
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "장소 생성 성공"),
         @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터"),
@@ -58,9 +57,9 @@ public class PlaceController {
     }
 
     @Operation(
-        summary = "장소 조회",
-        description =
-            """
+            summary = "장소 조회",
+            description =
+                    """
             장소 ID를 사용하여 특정 장소의 정보를 조회합니다.
 
             **권한:**
@@ -68,14 +67,12 @@ public class PlaceController {
 
             **참고:**
             - 유효하지 않은 장소 ID를 전달하면 404 에러가 반환됩니다.
-            """
-    )
+            """)
     @ApiResponses({
         @ApiResponse(
-            responseCode = "200",
-            description = "조회 성공",
-            content = @Content(schema = @Schema(implementation = PlaceResponseDto.class))
-        ),
+                responseCode = "200",
+                description = "조회 성공",
+                content = @Content(schema = @Schema(implementation = PlaceResponseDto.class))),
         @ApiResponse(responseCode = "404", description = "장소를 찾을 수 없음"),
         @ApiResponse(responseCode = "401", description = "인증되지 않은 요청")
     })
@@ -87,9 +84,9 @@ public class PlaceController {
     }
 
     @Operation(
-        summary = "장소 삭제",
-        description =
-            """
+            summary = "장소 삭제",
+            description =
+                    """
             장소 ID를 사용하여 특정 장소를 삭제합니다.
 
             **권한:**
@@ -97,8 +94,7 @@ public class PlaceController {
 
             **참고:**
             - 유효하지 않은 장소 ID를 전달하면 404 에러가 반환됩니다.
-            """
-    )
+            """)
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "장소 삭제 성공"),
         @ApiResponse(responseCode = "404", description = "장소를 찾을 수 없음"),

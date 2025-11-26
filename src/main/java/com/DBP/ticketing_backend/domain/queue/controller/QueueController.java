@@ -28,9 +28,9 @@ public class QueueController {
     private final WaitingQueueService waitingQueueService;
 
     @Operation(
-        summary = "대기열 진입",
-        description =
-            """
+            summary = "대기열 진입",
+            description =
+                    """
             특정 이벤트의 대기열에 줄을 섭니다.
 
             **권한:**
@@ -39,8 +39,7 @@ public class QueueController {
             **참고:**
             - 이벤트 ID가 유효하지 않으면 404 에러가 반환됩니다.
             - 이미 대기열에 등록된 경우 중복 등록은 허용되지 않습니다.
-            """
-    )
+            """)
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "대기열 등록 성공"),
         @ApiResponse(responseCode = "401", description = "인증되지 않은 요청"),
@@ -55,9 +54,9 @@ public class QueueController {
     }
 
     @Operation(
-        summary = "내 순서 확인",
-        description =
-            """
+            summary = "내 순서 확인",
+            description =
+                    """
             현재 내 대기 순번과 입장 가능 여부를 조회합니다.
 
             **반환 정보:**
@@ -70,8 +69,8 @@ public class QueueController {
             **참고:**
             - 이벤트 ID가 유효하지 않으면 404 에러가 반환됩니다.
             - 대기열에 등록되지 않은 경우 순번은 null로 반환됩니다.
-            """
-    )    @GetMapping("/rank/{eventId}")
+            """)
+    @GetMapping("/rank/{eventId}")
     public ResponseEntity<QueueResponseDto> getRank(
             @PathVariable Long eventId, @AuthenticationPrincipal UsersDetails usersDetails) {
 

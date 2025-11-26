@@ -29,7 +29,7 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query(
             "select s from Seat s where s.event.eventId = :eventId and s.status = :status order by"
-                + " s.seatId asc limit 1")
+                    + " s.seatId asc limit 1")
     Optional<Seat> findFirstByEvent_EventIdAndStatusOrderBySeatIdAscWithLock(
             @Param("eventId") Long eventId, @Param("status") SeatStatus status);
 }

@@ -37,9 +37,9 @@ public class EventController {
     private final EventService eventService;
 
     @Operation(
-        summary = "이벤트 생성",
-        description =
-            """
+            summary = "이벤트 생성",
+            description =
+                    """
             호스트가 이벤트 정보를 입력하여 새로운 이벤트를 생성합니다.
 
             **권한:**
@@ -47,8 +47,7 @@ public class EventController {
 
             **참고:**
             - 요청 본문에 이벤트 정보를 포함해야 합니다.
-            """
-    )
+            """)
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "이벤트 생성 성공"),
         @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터"),
@@ -62,9 +61,9 @@ public class EventController {
     }
 
     @Operation(
-        summary = "이벤트 목록 조회",
-        description =
-            """
+            summary = "이벤트 목록 조회",
+            description =
+                    """
             이벤트 상태에 따라 이벤트 목록을 조회합니다.
 
             **권한:**
@@ -72,14 +71,12 @@ public class EventController {
 
             **참고:**
             - `status` 파라미터를 사용하여 특정 상태의 이벤트만 필터링할 수 있습니다.
-            """
-    )
+            """)
     @ApiResponses({
         @ApiResponse(
-            responseCode = "200",
-            description = "조회 성공",
-            content = @Content(schema = @Schema(implementation = EventListResponseDto.class))
-        ),
+                responseCode = "200",
+                description = "조회 성공",
+                content = @Content(schema = @Schema(implementation = EventListResponseDto.class))),
         @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
     })
     @GetMapping
@@ -89,9 +86,9 @@ public class EventController {
     }
 
     @Operation(
-        summary = "이벤트 상세 조회",
-        description =
-            """
+            summary = "이벤트 상세 조회",
+            description =
+                    """
             이벤트 ID를 사용하여 특정 이벤트의 상세 정보를 조회합니다.
 
             **권한:**
@@ -99,14 +96,13 @@ public class EventController {
 
             **참고:**
             - 유효하지 않은 이벤트 ID를 전달하면 404 에러가 반환됩니다.
-            """
-    )
+            """)
     @ApiResponses({
         @ApiResponse(
-            responseCode = "200",
-            description = "조회 성공",
-            content = @Content(schema = @Schema(implementation = EventDetailResponseDto.class))
-        ),
+                responseCode = "200",
+                description = "조회 성공",
+                content =
+                        @Content(schema = @Schema(implementation = EventDetailResponseDto.class))),
         @ApiResponse(responseCode = "404", description = "이벤트를 찾을 수 없음")
     })
     @GetMapping("/{eventId}")
