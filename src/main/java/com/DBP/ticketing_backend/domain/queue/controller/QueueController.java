@@ -3,11 +3,14 @@ package com.DBP.ticketing_backend.domain.queue.controller;
 import com.DBP.ticketing_backend.domain.auth.dto.UsersDetails;
 import com.DBP.ticketing_backend.domain.queue.dto.QueueResponseDto;
 import com.DBP.ticketing_backend.domain.queue.service.WaitingQueueService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,8 +48,7 @@ public class QueueController {
     })
     @PostMapping("/{eventId}")
     public ResponseEntity<String> joinQueue(
-        @PathVariable Long eventId,
-        @AuthenticationPrincipal UsersDetails usersDetails) {
+            @PathVariable Long eventId, @AuthenticationPrincipal UsersDetails usersDetails) {
 
         waitingQueueService.registerQueue(eventId, usersDetails.getUserId());
         return ResponseEntity.ok("대기열에 등록되었습니다.");
@@ -71,8 +73,7 @@ public class QueueController {
             """
     )    @GetMapping("/rank/{eventId}")
     public ResponseEntity<QueueResponseDto> getRank(
-        @PathVariable Long eventId,
-        @AuthenticationPrincipal UsersDetails usersDetails) {
+            @PathVariable Long eventId, @AuthenticationPrincipal UsersDetails usersDetails) {
 
         Long rank = waitingQueueService.getRank(eventId, usersDetails.getUserId());
         boolean isActive = waitingQueueService.isActive(eventId, usersDetails.getUserId());

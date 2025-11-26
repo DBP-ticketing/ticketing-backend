@@ -165,16 +165,18 @@ public class EventService {
 
     @Transactional
     public void updateEventStatus(Long eventId, EventStatus newStatus) {
-        Event event = eventRepository.findById(eventId)
-            .orElseThrow(() -> new CustomException(ErrorCode.EVENT_NOT_FOUND));
+        Event event =
+                eventRepository
+                        .findById(eventId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.EVENT_NOT_FOUND));
 
         // 1. DB 상태 변경
         event.updateStatus(newStatus);
 
         // 2. 예매 불가능 상태가 되면 Redis 대기열 데이터 삭제 (메모리 확보)
-        if (newStatus == EventStatus.CLOSED ||
-            newStatus == EventStatus.CANCELLED ||
-            newStatus == EventStatus.COMPLETED) {
+        if (newStatus == EventStatus.CLOSED
+                || newStatus == EventStatus.CANCELLED
+                || newStatus == EventStatus.COMPLETED) {
 
             // 대기열(Waiting) 삭제
             redisTemplate.delete("waiting_queue:" + eventId);
@@ -188,16 +190,20 @@ public class EventService {
 
     @Transactional
     public void openEvent(Long eventId) {
-        Event event = eventRepository.findById(eventId)
-            .orElseThrow(() -> new CustomException(ErrorCode.EVENT_NOT_FOUND));
+        Event event =
+                eventRepository
+                        .findById(eventId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.EVENT_NOT_FOUND));
 
         event.updateStatus(EventStatus.OPEN);
     }
 
     @Transactional
     public void closeEndedEvent(Long eventId) {
-        Event event = eventRepository.findById(eventId)
-            .orElseThrow(() -> new CustomException(ErrorCode.EVENT_NOT_FOUND));
+        Event event =
+                eventRepository
+                        .findById(eventId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.EVENT_NOT_FOUND));
 
         // 공통 로직 호출 (CLOSED로 변경)
         processStatusChange(event, EventStatus.CLOSED);
@@ -207,7 +213,9 @@ public class EventService {
         event.updateStatus(status);
 
         // 종료/취소/마감 상태라면 대기열 삭제
-        if (status == EventStatus.CLOSED || status == EventStatus.CANCELLED || status == EventStatus.COMPLETED) {
+        if (status == EventStatus.CLOSED
+                || status == EventStatus.CANCELLED
+                || status == EventStatus.COMPLETED) {
             String eventIdStr = event.getEventId().toString();
             redisTemplate.delete("waiting_queue:" + eventIdStr);
             redisTemplate.delete("active_tokens:" + eventIdStr);
