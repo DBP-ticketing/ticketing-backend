@@ -75,7 +75,8 @@ public class BookingService {
 
             seat =
                     seatRepository
-                            .findByIdWithLock(bookingRequestDto.getSeatId())
+                            .findById(bookingRequestDto.getSeatId())
+                            // .findByIdWithLock(bookingRequestDto.getSeatId())
                             .orElseThrow(() -> new CustomException(ErrorCode.SEAT_NOT_FOUND));
 
             // 요청한 좌석의 이벤트와 일치하는지 확인
