@@ -62,7 +62,7 @@ public class BookingConcurrencyTest {
         // 테스트용 요청 DTO
         BookingRequestDto request =
                 BookingRequestDto.builder()
-                        .eventId(3L) // 9999년에 진행되는 이벤트
+                        .eventId(1L) // 9999년에 진행되는 이벤트
                         .seatId(2001L)
                         .build();
 
