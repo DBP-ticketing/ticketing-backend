@@ -27,14 +27,14 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @Operation(
-        summary = "결제 준비",
-        description =
-            """
+            summary = "결제 준비",
+            description =
+                    """
     예약에 대한 카카오페이 결제를 준비하고 결제 페이지 URL을 반환합니다.
-    
+
     **권한:**
     - 인증된 사용자만 접근 가능
-    
+
     **참고:**
     - 예약 ID를 경로 변수로 전달해야 합니다.
     - 반환된 paymentUrl로 리다이렉트하여 결제를 진행합니다.
@@ -46,8 +46,7 @@ public class PaymentController {
     })
     @PostMapping("/ready/{bookingId}")
     public ResponseEntity<PaymentResponseDto> ready(
-        @PathVariable Long bookingId,
-        @AuthenticationPrincipal UsersDetails usersDetails) {
+            @PathVariable Long bookingId, @AuthenticationPrincipal UsersDetails usersDetails) {
 
         log.info("결제 준비 요청 - bookingId: {}, userId: {}", bookingId, usersDetails.getUserId());
 
@@ -57,19 +56,18 @@ public class PaymentController {
     }
 
     @Operation(
-        summary = "결제 승인",
-        description =
-            """
+            summary = "결제 승인",
+            description =
+                    """
     카카오페이 결제 승인을 처리합니다. (사용자가 결제 완료 후 리다이렉트되는 엔드포인트)
-    
+
     **참고:**
     - 카카오페이에서 자동으로 리다이렉트되며 pg_token이 전달됩니다.
     - 결제 완료 후 예약 상태가 CONFIRMED로 변경됩니다.
     """)
     @GetMapping("/success")
     public RedirectView success(
-        @RequestParam("pg_token") String pgToken,
-        @RequestParam("booking_id") Long bookingId) {
+            @RequestParam("pg_token") String pgToken, @RequestParam("booking_id") Long bookingId) {
 
         log.info("결제 승인 콜백 - bookingId: {}, pgToken: {}", bookingId, pgToken);
 
@@ -77,7 +75,8 @@ public class PaymentController {
             paymentService.approve(bookingId, pgToken);
 
             // 프론트엔드 성공 페이지로 리다이렉트
-            return new RedirectView("http://localhost:3000/payment/success?booking_id=" + bookingId);
+            return new RedirectView(
+                    "http://localhost:3000/payment/success?booking_id=" + bookingId);
 
         } catch (Exception e) {
             log.error("결제 승인 실패", e);
@@ -85,9 +84,7 @@ public class PaymentController {
         }
     }
 
-    @Operation(
-        summary = "결제 취소",
-        description = "사용자가 결제 중 취소 버튼을 클릭한 경우 호출됩니다.")
+    @Operation(summary = "결제 취소", description = "사용자가 결제 중 취소 버튼을 클릭한 경우 호출됩니다.")
     @GetMapping("/cancel")
     public RedirectView cancel(@RequestParam("booking_id") Long bookingId) {
 
@@ -99,9 +96,7 @@ public class PaymentController {
         return new RedirectView("http://localhost:3000/payment/cancel?booking_id=" + bookingId);
     }
 
-    @Operation(
-        summary = "결제 실패",
-        description = "결제 중 오류가 발생한 경우 호출됩니다.")
+    @Operation(summary = "결제 실패", description = "결제 중 오류가 발생한 경우 호출됩니다.")
     @GetMapping("/fail")
     public RedirectView fail(@RequestParam("booking_id") Long bookingId) {
 
