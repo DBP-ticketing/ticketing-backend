@@ -178,7 +178,7 @@ public class BookingService {
         changeBookingStatusWithHistory(booking, bookedSeat, BookingStatus.CANCELLED);
     }
 
-    private void changeBookingStatusWithHistory(
+    public void changeBookingStatusWithHistory(
             Booking booking, BookedSeat bookedSeat, BookingStatus newStatus) {
         // 1. 이전 상태 기록
         BookingStatus previousStatus = booking.getStatus();
@@ -198,46 +198,46 @@ public class BookingService {
         bookedSeatHistoryRepository.save(history);
     }
 
-    @Transactional
-    public BookingResponseDto payBooking(UsersDetails usersDetails, Long bookingId) {
-
-        // 예약 조회
-        Booking booking =
-                bookingRepository
-                        .findById(bookingId)
-                        .orElseThrow(() -> new CustomException(ErrorCode.BOOKING_NOT_FOUND));
-
-        // 예약한 유저와 요청한 유저가 같은지 확인
-        if (!booking.getUsers().getUserId().equals(usersDetails.getUserId())) {
-            throw new CustomException(ErrorCode.UNAUTHORIZED_ACCESS);
-        }
-
-        if (booking.getStatus() != BookingStatus.PENDING) {
-            // 이미 결제되었거나, 취소된 예약은 결제 불가
-            throw new CustomException(ErrorCode.INVALID_BOOKING_STATUS);
-        }
-
-        // 예약된 좌석 조회
-        BookedSeat bookedSeat =
-                bookedSeatRepository
-                        .findByBooking(booking)
-                        .orElseThrow(() -> new CustomException(ErrorCode.SEAT_NOT_FOUND));
-
-        Seat seat = bookedSeat.getSeat();
-
-        if (seat.getStatus() != SeatStatus.RESERVED) {
-            throw new CustomException(ErrorCode.INVALID_SEAT_STATUS);
-            // "결제 가능한 좌석 상태가 아닙니다."
-        }
-
-        // 좌석 상태를 SOLD로 업데이트
-        seat.updateStatus(SeatStatus.SOLD);
-        changeBookingStatusWithHistory(booking, bookedSeat, BookingStatus.CONFIRMED);
-
-        waitingQueueService.popQueue(seat.getEvent().getEventId(), usersDetails.getUserId());
-
-        return BookingResponseDto.from(booking, seat);
-    }
+//    @Transactional
+//    public BookingResponseDto payBooking(UsersDetails usersDetails, Long bookingId) {
+//
+//        // 예약 조회
+//        Booking booking =
+//                bookingRepository
+//                        .findById(bookingId)
+//                        .orElseThrow(() -> new CustomException(ErrorCode.BOOKING_NOT_FOUND));
+//
+//        // 예약한 유저와 요청한 유저가 같은지 확인
+//        if (!booking.getUsers().getUserId().equals(usersDetails.getUserId())) {
+//            throw new CustomException(ErrorCode.UNAUTHORIZED_ACCESS);
+//        }
+//
+//        if (booking.getStatus() != BookingStatus.PENDING) {
+//            // 이미 결제되었거나, 취소된 예약은 결제 불가
+//            throw new CustomException(ErrorCode.INVALID_BOOKING_STATUS);
+//        }
+//
+//        // 예약된 좌석 조회
+//        BookedSeat bookedSeat =
+//                bookedSeatRepository
+//                        .findByBooking(booking)
+//                        .orElseThrow(() -> new CustomException(ErrorCode.SEAT_NOT_FOUND));
+//
+//        Seat seat = bookedSeat.getSeat();
+//
+//        if (seat.getStatus() != SeatStatus.RESERVED) {
+//            throw new CustomException(ErrorCode.INVALID_SEAT_STATUS);
+//            // "결제 가능한 좌석 상태가 아닙니다."
+//        }
+//
+//        // 좌석 상태를 SOLD로 업데이트
+//        seat.updateStatus(SeatStatus.SOLD);
+//        changeBookingStatusWithHistory(booking, bookedSeat, BookingStatus.CONFIRMED);
+//
+//        waitingQueueService.popQueue(seat.getEvent().getEventId(), usersDetails.getUserId());
+//
+//        return BookingResponseDto.from(booking, seat);
+//    }
 
     private void validateTicketingTime(Event event) {
         // 1. 시간 체크: 현재 시간이 예매 시작 시간보다 이전이면 에러

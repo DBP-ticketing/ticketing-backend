@@ -57,6 +57,8 @@ dependencies {
 
 	// 2. Redisson (분산 락 구현을 위한 강력한 클라이언트)
 	implementation 'org.redisson:redisson-spring-boot-starter:3.23.2'
+
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
 }
 
 tasks.named('test') {

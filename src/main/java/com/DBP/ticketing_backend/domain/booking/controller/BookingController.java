@@ -84,29 +84,29 @@ public class BookingController {
         return ResponseEntity.ok(bookingService.cancelBooking(usersDetails, bookingId));
     }
 
-    @Operation(
-            summary = "결제",
-            description =
-                    """
-            예매를 결제하여 확정합니다.
-
-            **권한:**
-            - 인증된 사용자만 접근 가능
-
-            **참고:**
-            - 예매 ID를 경로 변수로 전달해야 합니다.
-            """)
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "결제 성공"),
-        @ApiResponse(responseCode = "401", description = "인증되지 않은 요청"),
-        @ApiResponse(responseCode = "404", description = "예매를 찾을 수 없음")
-    })
-    @PostMapping("/{bookingId}")
-    public ResponseEntity<BookingResponseDto> payBooking(
-            @AuthenticationPrincipal UsersDetails usersDetails,
-            @PathVariable("bookingId") Long bookingId) {
-        return ResponseEntity.ok(bookingService.payBooking(usersDetails, bookingId));
-    }
+//    @Operation(
+//            summary = "결제",
+//            description =
+//                    """
+//            예매를 결제하여 확정합니다.
+//
+//            **권한:**
+//            - 인증된 사용자만 접근 가능
+//
+//            **참고:**
+//            - 예매 ID를 경로 변수로 전달해야 합니다.
+//            """)
+//    @ApiResponses({
+//        @ApiResponse(responseCode = "200", description = "결제 성공"),
+//        @ApiResponse(responseCode = "401", description = "인증되지 않은 요청"),
+//        @ApiResponse(responseCode = "404", description = "예매를 찾을 수 없음")
+//    })
+//    @PostMapping("/{bookingId}")
+//    public ResponseEntity<BookingResponseDto> payBooking(
+//            @AuthenticationPrincipal UsersDetails usersDetails,
+//            @PathVariable("bookingId") Long bookingId) {
+//        return ResponseEntity.ok(bookingService.payBooking(usersDetails, bookingId));
+//    }
 
     @Operation(
             summary = "내 예매 내역 조회",
