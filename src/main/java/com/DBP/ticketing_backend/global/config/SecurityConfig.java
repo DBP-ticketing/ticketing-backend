@@ -51,8 +51,7 @@ public class SecurityConfig {
                                             // 카카오페이 콜백 URL
                                             "/api/payment/success",
                                             "/api/payment/cancel",
-                                            "/api/payment/fail"
-                                    )
+                                            "/api/payment/fail")
                                     .permitAll();
 
                             // 로그아웃은 인증 필요
