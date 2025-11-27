@@ -7,8 +7,8 @@ import com.DBP.ticketing_backend.domain.booking.entity.Booking;
 import com.DBP.ticketing_backend.domain.booking.enums.BookingStatus;
 import com.DBP.ticketing_backend.domain.booking.repository.BookingRepository;
 import com.DBP.ticketing_backend.domain.booking.service.BookingService;
-import com.DBP.ticketing_backend.domain.payment.dto.response.KakaoPayApproveResponse;
-import com.DBP.ticketing_backend.domain.payment.dto.response.KakaoPayReadyResponse;
+import com.DBP.ticketing_backend.domain.payment.dto.response.KakaoPayApproveResponseDto;
+import com.DBP.ticketing_backend.domain.payment.dto.response.KakaoPayReadyResponseDto;
 import com.DBP.ticketing_backend.domain.payment.dto.response.PaymentResponseDto;
 import com.DBP.ticketing_backend.domain.payment.entity.Payment;
 import com.DBP.ticketing_backend.domain.payment.enums.PaymentStatus;
@@ -70,9 +70,12 @@ public class PaymentService {
                 seat.getEvent().getEventName() + " - " + seat.getTemplate().getSection() + "석";
 
         // 3. 카카오페이 결제 준비 요청
-        KakaoPayReadyResponse readyResponse =
-                kakaoPayService.ready(
-                        bookingId, usersDetails.getUserId(), itemName, booking.getTotalPrice());
+        KakaoPayReadyResponseDto readyResponse = kakaoPayService.ready(
+            bookingId,
+            usersDetails.getUserId(),
+            itemName,
+            booking.getTotalPrice()
+        );
 
         // 4. Payment 엔티티 생성 및 저장
         Payment payment =
@@ -112,9 +115,12 @@ public class PaymentService {
                         .orElseThrow(() -> new RuntimeException("결제 정보를 찾을 수 없습니다."));
 
         // 3. 카카오페이 결제 승인 요청
-        KakaoPayApproveResponse approveResponse =
-                kakaoPayService.approve(
-                        payment.getTid(), bookingId, booking.getUsers().getUserId(), pgToken);
+        KakaoPayApproveResponseDto approveResponse = kakaoPayService.approve(
+            payment.getTid(),
+            bookingId,
+            booking.getUsers().getUserId(),
+            pgToken
+        );
 
         // 4. Payment 상태 업데이트
         payment.approve(approveResponse.getPayment_method_type(), approveResponse.getApproved_at());

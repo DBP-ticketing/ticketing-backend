@@ -47,7 +47,12 @@ public class SecurityConfig {
                                             "/api/seat/**",
                                             "/swagger-ui/**",
                                             "/v3/api-docs/**",
-                                            "/webjars/**")
+                                            "/webjars/**",
+                                            // 카카오페이 콜백 URL
+                                            "/api/payment/success",
+                                            "/api/payment/cancel",
+                                            "/api/payment/fail"
+                                    )
                                     .permitAll();
 
                             // 로그아웃은 인증 필요
