@@ -16,11 +16,6 @@ spring:
       hibernate:
         format_sql: true
 
-  data:
-    redis:
-      host: localhost
-      port: 6379
-
 jwt:
   secret: ${JWT_SECRET}
   access-token-expiration: ${JWT_ACCESSTOKEN_EXPIRATION}      # 15분
