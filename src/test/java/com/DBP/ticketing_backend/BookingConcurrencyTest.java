@@ -62,8 +62,8 @@ public class BookingConcurrencyTest {
         // 테스트용 요청 DTO
         BookingRequestDto request =
                 BookingRequestDto.builder()
-                        .eventId(3L) // 9999년에 진행되는 이벤트
-                        .seatId(2001L)
+                        .eventId(1L) // 9999년에 진행되는 이벤트
+                        .seatId(2003L)
                         .build();
 
         // when
@@ -97,7 +97,7 @@ public class BookingConcurrencyTest {
     @AfterEach
     void tearDown() {
         // 1. 테스트에 사용한 좌석 ID
-        Long targetSeatId = 2001L;
+        Long targetSeatId = 2003L;
 
         // 2. 해당 좌석을 조회
         Seat seat = seatRepository.findById(targetSeatId).orElseThrow();

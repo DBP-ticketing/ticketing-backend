@@ -42,7 +42,7 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .subject(email)
-                .claim("role", "ROLE_" + role)
+                .claim("role", role)
                 .claim("type", "access")
                 .issuedAt(now)
                 .expiration(expiryDate)
