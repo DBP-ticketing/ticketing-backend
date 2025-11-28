@@ -26,6 +26,7 @@ import com.DBP.ticketing_backend.global.exception.CustomException;
 import com.DBP.ticketing_backend.global.exception.ErrorCode;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +36,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BookingService {
@@ -46,7 +48,7 @@ public class BookingService {
     private final BookedSeatRepository bookedSeatRepository;
     private final BookedSeatHistoryRepository bookedSeatHistoryRepository;
     private final WaitingQueueService waitingQueueService;
-    private final PaymentRepository paymentRepository; // 추가
+    private final PaymentRepository paymentRepository;
 
     @Transactional
     public BookingResponseDto createBooking(
@@ -168,7 +170,7 @@ public class BookingService {
         Seat seat = bookedSeat.getSeat();
         seat.updateStatus(SeatStatus.AVAILABLE);
 
-        // Payment 상태도 함께 업데이트 (추가)
+        // Payment 상태도 함께 업데이트
         Optional<Payment> paymentOpt = paymentRepository.findByBooking(booking);
         paymentOpt.ifPresent(Payment::cancel);
 
@@ -181,7 +183,7 @@ public class BookingService {
         Seat seat = bookedSeat.getSeat();
         seat.updateStatus(SeatStatus.AVAILABLE);
 
-        // Payment 상태도 함께 업데이트 (추가)
+        // Payment 상태도 함께 업데이트
         Optional<Payment> paymentOpt = paymentRepository.findByBooking(booking);
         paymentOpt.ifPresent(Payment::cancel);
 
@@ -202,8 +204,8 @@ public class BookingService {
             BookedSeatHistory.builder()
                 .bookedSeat(bookedSeat)
                 .booking(booking)
-                .previousStatus(previousStatus) // 변경 전 상태 (예: CONFIRMED)
-                .currentStatus(newStatus) // 변경 후 상태 (예: CANCELLED)
+                .previousStatus(previousStatus) // 변경 전 상태
+                .currentStatus(newStatus) // 변경 후 상태
                 .build();
 
         bookedSeatHistoryRepository.save(history);
@@ -221,7 +223,7 @@ public class BookingService {
         }
     }
 
-    @Transactional(readOnly = true) // 조회 전용 최적화
+    @Transactional(readOnly = true)
     public List<BookingResponseDto> getMyBookings(UsersDetails usersDetails, BookingStatus status) {
 
         Users user =
@@ -241,16 +243,20 @@ public class BookingService {
         return bookings.stream()
             .map(
                 booking -> {
-                    // BookedSeat를 통해 Seat 정보 가져오기
-                    BookedSeat bookedSeat =
-                        bookedSeatRepository
-                            .findByBooking(booking)
-                            .orElseThrow(
-                                () ->
-                                    new CustomException(
-                                        ErrorCode.SEAT_NOT_FOUND));
+                    try {
+                        // BookedSeat를 통해 Seat 정보 가져오기
+                        BookedSeat bookedSeat =
+                            bookedSeatRepository
+                                .findByBooking(booking)
+                                .orElseThrow(
+                                    () -> new CustomException(ErrorCode.SEAT_NOT_FOUND));
 
-                    return BookingResponseDto.from(booking, bookedSeat.getSeat());
+                        return BookingResponseDto.from(booking, bookedSeat.getSeat());
+                    } catch (Exception e) {
+                        log.error("예매 내역 조회 중 오류 발생 - bookingId: {}, error: {}",
+                            booking.getBookingId(), e.getMessage());
+                        throw e;
+                    }
                 })
             .collect(Collectors.toList());
     }

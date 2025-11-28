@@ -84,7 +84,9 @@ public class SecurityConfig {
                             // HOST만 접근 가능
                             auth.requestMatchers("/api/host/**").hasRole("HOST");
 
-                            // USER, HOST 모두 접근 가능
+//                            auth.requestMatchers("/api/bookings/**").authenticated();
+//                            auth.requestMatchers("/api/queue/**").authenticated();
+//                            auth.requestMatchers("/api/payment/**").authenticated();
                             auth.requestMatchers("/api/**").authenticated();
 
                             // 나머지는 인증 필요
