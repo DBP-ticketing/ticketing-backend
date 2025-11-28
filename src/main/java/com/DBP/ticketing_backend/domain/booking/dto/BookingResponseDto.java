@@ -15,6 +15,7 @@ import lombok.Data;
 public class BookingResponseDto {
 
     private Long bookingId;
+    private Long eventId; // 추가
     private String eventName; // 이벤트명
 
     // 좌석 정보
@@ -31,15 +32,16 @@ public class BookingResponseDto {
         boolean isAssigned = (seatForm == SeatForm.ASSIGNED);
 
         return BookingResponseDto.builder()
-                .bookingId(booking.getBookingId())
-                // Seat를 통해 Event와 Template 정보에 접근
-                .eventName(seat.getEvent().getEventName())
-                .section(seat.getTemplate().getSection())
-                // 지정석인 경우에만 행과 열 정보를 포함
-                .seatRow(isAssigned ? seat.getTemplate().getRow() : null)
-                .seatCol(isAssigned ? seat.getTemplate().getColumn() : null)
-                .price(booking.getTotalPrice())
-                .status(booking.getStatus())
-                .build();
+            .bookingId(booking.getBookingId())
+            .eventId(seat.getEvent().getEventId()) // 추가
+            // Seat를 통해 Event와 Template 정보에 접근
+            .eventName(seat.getEvent().getEventName())
+            .section(seat.getTemplate().getSection())
+            // 지정석인 경우에만 행과 열 정보를 포함
+            .seatRow(isAssigned ? seat.getTemplate().getRow() : null)
+            .seatCol(isAssigned ? seat.getTemplate().getColumn() : null)
+            .price(booking.getTotalPrice())
+            .status(booking.getStatus())
+            .build();
     }
 }

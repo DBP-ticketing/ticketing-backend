@@ -2,6 +2,7 @@ package com.DBP.ticketing_backend.domain.event.repository;
 
 import com.DBP.ticketing_backend.domain.event.entity.Event;
 import com.DBP.ticketing_backend.domain.event.enums.EventStatus;
+import com.DBP.ticketing_backend.domain.host.entity.Host;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -21,4 +22,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findAllByStatus(EventStatus eventStatus);
 
     List<Event> findByStatusAndDateBefore(EventStatus eventStatus, LocalDateTime now);
+
+    List<Event> findAllByHostOrderByCreatedAtDesc(Host host);
 }

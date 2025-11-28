@@ -37,17 +37,17 @@ public class BookingController {
     private final BookingFacade bookingFacade;
 
     @Operation(
-            summary = "예매 생성",
-            description =
-                    """
-            이벤트 혹은 좌석 정보를 기반으로 예매를 생성합니다.
+        summary = "예매 생성",
+        description =
+            """
+    이벤트 혹은 좌석 정보를 기반으로 예매를 생성합니다.
 
-            **권한:**
-            - 인증된 사용자만 접근 가능
+    **권한:**
+    - 인증된 사용자만 접근 가능
 
-            **참고:**
-            - 요청 본문에 예매 정보를 포함해야 합니다.
-            """)
+    **참고:**
+    - 요청 본문에 예매 정보를 포함해야 합니다.
+    """)
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "예매 생성 성공"),
         @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터"),
@@ -55,23 +55,23 @@ public class BookingController {
     })
     @PostMapping
     public ResponseEntity<BookingResponseDto> createBooking(
-            @AuthenticationPrincipal UsersDetails usersDetails,
-            @RequestBody BookingRequestDto bookingRequestDto) {
+        @AuthenticationPrincipal UsersDetails usersDetails,
+        @RequestBody BookingRequestDto bookingRequestDto) {
         return ResponseEntity.ok(bookingFacade.createBooking(usersDetails, bookingRequestDto));
     }
 
     @Operation(
-            summary = "예매 취소",
-            description =
-                    """
-            결제 대기 상태 또는 예매 완료된 예매를 취소합니다.
+        summary = "예매 취소",
+        description =
+            """
+    결제 대기 상태 또는 예매 완료된 예매를 취소합니다.
 
-            **권한:**
-            - 인증된 사용자만 접근 가능
+    **권한:**
+    - 인증된 사용자만 접근 가능
 
-            **참고:**
-            - 예매 ID를 경로 변수로 전달해야 합니다.
-            """)
+    **참고:**
+    - 예매 ID를 경로 변수로 전달해야 합니다.
+    """)
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "예매 취소 성공"),
         @ApiResponse(responseCode = "401", description = "인증되지 않은 요청"),
@@ -79,56 +79,31 @@ public class BookingController {
     })
     @DeleteMapping("/{bookingId}")
     public ResponseEntity<BookingResponseDto> cancelBooking(
-            @AuthenticationPrincipal UsersDetails usersDetails,
-            @PathVariable("bookingId") Long bookingId) {
+        @AuthenticationPrincipal UsersDetails usersDetails,
+        @PathVariable("bookingId") Long bookingId) {
         return ResponseEntity.ok(bookingService.cancelBooking(usersDetails, bookingId));
     }
 
-    //    @Operation(
-    //            summary = "결제",
-    //            description =
-    //                    """
-    //            예매를 결제하여 확정합니다.
-    //
-    //            **권한:**
-    //            - 인증된 사용자만 접근 가능
-    //
-    //            **참고:**
-    //            - 예매 ID를 경로 변수로 전달해야 합니다.
-    //            """)
-    //    @ApiResponses({
-    //        @ApiResponse(responseCode = "200", description = "결제 성공"),
-    //        @ApiResponse(responseCode = "401", description = "인증되지 않은 요청"),
-    //        @ApiResponse(responseCode = "404", description = "예매를 찾을 수 없음")
-    //    })
-    //    @PostMapping("/{bookingId}")
-    //    public ResponseEntity<BookingResponseDto> payBooking(
-    //            @AuthenticationPrincipal UsersDetails usersDetails,
-    //            @PathVariable("bookingId") Long bookingId) {
-    //        return ResponseEntity.ok(bookingService.payBooking(usersDetails, bookingId));
-    //    }
-
     @Operation(
-            summary = "내 예매 내역 조회",
-            description =
-                    """
-            로그인한 사용자의 예매 내역을 조회합니다.
+        summary = "내 예매 내역 조회",
+        description =
+            """
+    로그인한 사용자의 예매 내역을 조회합니다.
 
-            **권한:**
-            - 인증된 사용자만 접근 가능
+    **권한:**
+    - 인증된 사용자만 접근 가능
 
-            **참고:**
-            - `status` 파라미터를 사용하여 예매 상태별로 필터링할 수 있습니다.
-            """)
+    **참고:**
+    - `status` 파라미터를 사용하여 예매 상태별로 필터링할 수 있습니다.
+    """)
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "조회 성공"),
         @ApiResponse(responseCode = "401", description = "인증되지 않은 요청")
     })
     @GetMapping("/my")
     public ResponseEntity<List<BookingResponseDto>> getMyBookings(
-            @AuthenticationPrincipal UsersDetails usersDetails,
-            @RequestParam(required = false) BookingStatus status // ?status=CONFIRMED
-            ) {
+        @AuthenticationPrincipal UsersDetails usersDetails,
+        @RequestParam(required = false) BookingStatus status) {
         return ResponseEntity.ok(bookingService.getMyBookings(usersDetails, status));
     }
 }
