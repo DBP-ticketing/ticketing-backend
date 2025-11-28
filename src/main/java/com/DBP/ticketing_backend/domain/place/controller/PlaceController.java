@@ -16,6 +16,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -78,6 +79,7 @@ public class PlaceController {
         @ApiResponse(responseCode = "401", description = "인증되지 않은 요청")
     })
     @GetMapping("/{placeId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HOST')")
     public ResponseEntity<PlaceResponseDto> getPlace(
             @PathVariable("placeId") Long placeId,
             @AuthenticationPrincipal UsersDetails usersDetails) {
