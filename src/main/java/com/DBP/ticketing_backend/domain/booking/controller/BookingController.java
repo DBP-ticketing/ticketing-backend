@@ -4,7 +4,7 @@ import com.DBP.ticketing_backend.domain.auth.dto.UsersDetails;
 import com.DBP.ticketing_backend.domain.booking.dto.BookingRequestDto;
 import com.DBP.ticketing_backend.domain.booking.dto.BookingResponseDto;
 import com.DBP.ticketing_backend.domain.booking.enums.BookingStatus;
-import com.DBP.ticketing_backend.domain.booking.facade.BookingFacade;
+//import com.DBP.ticketing_backend.domain.booking.facade.BookingFacade;
 import com.DBP.ticketing_backend.domain.booking.service.BookingService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,7 +34,7 @@ import java.util.List;
 public class BookingController {
 
     private final BookingService bookingService;
-    private final BookingFacade bookingFacade;
+    //private final BookingFacade bookingFacade;
 
     @Operation(
             summary = "예매 생성",
@@ -57,7 +57,7 @@ public class BookingController {
     public ResponseEntity<BookingResponseDto> createBooking(
             @AuthenticationPrincipal UsersDetails usersDetails,
             @RequestBody BookingRequestDto bookingRequestDto) {
-        return ResponseEntity.ok(bookingFacade.createBooking(usersDetails, bookingRequestDto));
+        return ResponseEntity.ok(bookingService.createBooking(usersDetails, bookingRequestDto));
     }
 
     @Operation(

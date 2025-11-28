@@ -8,7 +8,7 @@ import com.DBP.ticketing_backend.domain.event.service.EventService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.data.redis.core.RedisTemplate;
+//import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +22,7 @@ public class EventScheduler {
 
     private final EventRepository eventRepository;
     private final EventService eventService;
-    private final RedisTemplate<String, String> redisTemplate;
+    //private final RedisTemplate<String, String> redisTemplate;
 
     @Scheduled(cron = "0 * * * * *")
     public void openTicketingEvents() {

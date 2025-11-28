@@ -13,7 +13,7 @@ import com.DBP.ticketing_backend.domain.payment.dto.response.KakaoPayReadyRespon
 import com.DBP.ticketing_backend.domain.payment.dto.response.PaymentResponseDto;
 import com.DBP.ticketing_backend.domain.payment.entity.Payment;
 import com.DBP.ticketing_backend.domain.payment.repository.PaymentRepository;
-import com.DBP.ticketing_backend.domain.queue.service.WaitingQueueService;
+//import com.DBP.ticketing_backend.domain.queue.service.WaitingQueueService;
 import com.DBP.ticketing_backend.domain.seat.entity.Seat;
 import com.DBP.ticketing_backend.domain.seat.enums.SeatStatus;
 import com.DBP.ticketing_backend.global.exception.CustomException;
@@ -36,7 +36,7 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final BookingRepository bookingRepository;
     private final BookedSeatRepository bookedSeatRepository;
-    private final WaitingQueueService waitingQueueService;
+    //private final WaitingQueueService waitingQueueService;
     private final BookingService bookingService;
 
     /** 결제 준비 - 카카오페이 결제 페이지 URL 반환 */
@@ -133,7 +133,7 @@ public class PaymentService {
         bookingService.changeBookingStatusWithHistory(booking, bookedSeat, BookingStatus.CONFIRMED);
 
         // 6. 대기열에서 제거
-        waitingQueueService.popQueue(seat.getEvent().getEventId(), booking.getUsers().getUserId());
+        //waitingQueueService.popQueue(seat.getEvent().getEventId(), booking.getUsers().getUserId());
 
         // 7. 응답 생성
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
