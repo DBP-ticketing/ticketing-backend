@@ -4,7 +4,6 @@ import com.DBP.ticketing_backend.domain.auth.exception.JwtAccessDeniedHandler;
 import com.DBP.ticketing_backend.domain.auth.exception.JwtAuthenticationEntryPoint;
 import com.DBP.ticketing_backend.domain.auth.service.JwtAuthenticationFilter;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.context.annotation.Bean;
@@ -14,6 +13,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
+
+import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
@@ -25,15 +26,22 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(request -> {
-                    CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(List.of("http://localhost:3000"));
-                    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                    config.setAllowedHeaders(List.of("*"));
-                    config.setExposedHeaders(List.of("Authorization"));
-                    config.setAllowCredentials(true);
-                    return config;
-                }))
+                .cors(
+                        cors ->
+                                cors.configurationSource(
+                                        request -> {
+                                            CorsConfiguration config = new CorsConfiguration();
+                                            config.setAllowedOrigins(
+                                                    List.of("http://localhost:3000"));
+                                            config.setAllowedMethods(
+                                                    List.of(
+                                                            "GET", "POST", "PUT", "DELETE",
+                                                            "OPTIONS"));
+                                            config.setAllowedHeaders(List.of("*"));
+                                            config.setExposedHeaders(List.of("Authorization"));
+                                            config.setAllowCredentials(true);
+                                            return config;
+                                        }))
                 .sessionManagement(
                         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin(form -> form.disable())
