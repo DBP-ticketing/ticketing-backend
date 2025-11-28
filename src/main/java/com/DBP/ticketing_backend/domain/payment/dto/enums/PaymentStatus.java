@@ -1,4 +1,4 @@
-package com.DBP.ticketing_backend.domain.payment.enums;
+package com.DBP.ticketing_backend.domain.payment.dto.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

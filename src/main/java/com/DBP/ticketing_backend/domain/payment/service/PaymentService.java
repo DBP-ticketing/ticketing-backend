@@ -11,7 +11,7 @@ import com.DBP.ticketing_backend.domain.payment.dto.response.KakaoPayApproveResp
 import com.DBP.ticketing_backend.domain.payment.dto.response.KakaoPayReadyResponseDto;
 import com.DBP.ticketing_backend.domain.payment.dto.response.PaymentResponseDto;
 import com.DBP.ticketing_backend.domain.payment.entity.Payment;
-import com.DBP.ticketing_backend.domain.payment.enums.PaymentStatus;
+import com.DBP.ticketing_backend.domain.payment.dto.enums.PaymentStatus;
 import com.DBP.ticketing_backend.domain.payment.repository.PaymentRepository;
 import com.DBP.ticketing_backend.domain.queue.service.WaitingQueueService;
 import com.DBP.ticketing_backend.domain.seat.entity.Seat;
