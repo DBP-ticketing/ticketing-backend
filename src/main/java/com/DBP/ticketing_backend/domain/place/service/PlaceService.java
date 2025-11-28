@@ -13,6 +13,7 @@ import com.DBP.ticketing_backend.domain.users.repository.UsersRepository;
 import com.DBP.ticketing_backend.global.exception.CustomException;
 import com.DBP.ticketing_backend.global.exception.ErrorCode;
 
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
@@ -106,5 +107,12 @@ public class PlaceService {
         return placeRepository
                 .findById(placeId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PLACE_NOT_FOUND));
+    }
+
+    @Transactional(readOnly = true)
+    public List<PlaceResponseDto> getAllPlaces() {
+        return placeRepository.findAll().stream()
+            .map(place -> PlaceResponseDto.from(place, new ArrayList<>()))
+            .collect(Collectors.toList());
     }
 }

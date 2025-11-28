@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
@@ -106,5 +107,11 @@ public class PlaceController {
             @AuthenticationPrincipal UsersDetails usersDetails) {
         placeService.deletePlace(placeId, usersDetails);
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "장소 전체 목록 조회", description = "등록된 모든 장소의 목록을 조회합니다.")
+    @GetMapping
+    public ResponseEntity<List<PlaceResponseDto>> getAllPlaces() {
+        return ResponseEntity.ok(placeService.getAllPlaces());
     }
 }

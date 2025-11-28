@@ -22,6 +22,7 @@ public class EventListResponseDto {
     private String hostName; // 호스트명 (회사명)
     private String placeName; // 장소명
     private LocalDateTime date; // 공연 날짜
+    private LocalDateTime ticketingStartAt; // 예매 시작 날짜 및 시간
     private EventCategory category;
     private EventStatus status; // 예매중/마감 등 상태
 
@@ -32,6 +33,7 @@ public class EventListResponseDto {
                 .hostName(event.getHost().getCompanyName()) // Host 엔티티 접근
                 .placeName(event.getPlace().getPlaceName()) // Place 엔티티 접근
                 .date(event.getDate())
+                .ticketingStartAt(event.getTicketingStartAt())
                 .category(event.getCategory())
                 .status(event.getStatus())
                 .build();
