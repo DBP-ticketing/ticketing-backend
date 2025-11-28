@@ -143,6 +143,7 @@ public class AuthService implements UserDetailsService {
         refreshTokenRepository.save(newRefreshToken);
 
         return LoginResponseDto.builder()
+                .userId(user.getUserId())
                 .email(user.getEmail())
                 .name(user.getName())
                 .role(user.getRole().name())

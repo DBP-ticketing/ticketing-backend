@@ -1,7 +1,7 @@
 package com.DBP.ticketing_backend.domain.payment.entity;
 
 import com.DBP.ticketing_backend.domain.booking.entity.Booking;
-import com.DBP.ticketing_backend.domain.payment.enums.PaymentStatus;
+import com.DBP.ticketing_backend.domain.payment.dto.enums.PaymentStatus;
 import com.DBP.ticketing_backend.global.common.BaseEntity;
 
 import jakarta.persistence.*;
