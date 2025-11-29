@@ -115,4 +115,18 @@ public class PlaceService {
             .map(place -> PlaceResponseDto.from(place, new ArrayList<>()))
             .collect(Collectors.toList());
     }
+
+    /**
+     * 특정 장소의 고유한 좌석 구역(Section) 목록을 조회합니다.
+     * @param placeId 장소 ID
+     * @return 고유한 구역 이름(String) 목록
+     */
+    @Transactional(readOnly = true)
+    public List<String> getPlaceSections(Long placeId) {
+        // 1. 장소의 존재 여부 확인 (없으면 PLACE_NOT_FOUND 에러 발생)
+        Place place = findPlaceById(placeId);
+
+        // 2. 해당 장소의 고유한 구역명 목록을 DB에서 조회하여 반환
+        return seatTemplateRepository.findDistinctSectionNamesByPlaceId(place.getPlaceId());
+    }
 }

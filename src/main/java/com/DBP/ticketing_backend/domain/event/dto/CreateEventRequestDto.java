@@ -43,7 +43,7 @@ public class CreateEventRequestDto {
 
     @Data
     public static class SectionSetting {
-        @NotBlank(message = "구역명은 필수입니다.")
+        @NotNull(message = "구역명은 필수입니다.")
         private String sectionName; // 예: "A", "1층 R석" (Template의 section과 일치해야 함)
 
         @NotNull(message = "좌석 등급은 필수입니다.")

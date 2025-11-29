@@ -116,4 +116,22 @@ public class PlaceController {
     public ResponseEntity<List<PlaceResponseDto>> getAllPlaces() {
         return ResponseEntity.ok(placeService.getAllPlaces());
     }
+
+    @Operation(
+        summary = "장소의 구역(Section) 목록 조회",
+        description = "특정 장소 ID를 사용하여 해당 장소에 등록된 모든 고유한 좌석 구역명(section name) 목록을 조회합니다."
+    )
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "200",
+            description = "조회 성공",
+            content = @Content(schema = @Schema(implementation = String.class))), // List of Strings
+        @ApiResponse(responseCode = "404", description = "장소를 찾을 수 없음"),
+        @ApiResponse(responseCode = "401", description = "인증되지 않은 요청")
+    })
+    @GetMapping("/{placeId}/sections")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HOST')")
+    public ResponseEntity<List<String>> getPlaceSections(@PathVariable("placeId") Long placeId) {
+        return ResponseEntity.ok(placeService.getPlaceSections(placeId));
+    }
 }
