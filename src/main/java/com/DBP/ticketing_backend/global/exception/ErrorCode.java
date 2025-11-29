@@ -38,6 +38,7 @@ public enum ErrorCode {
     EVENT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 공연을 찾을 수 없습니다."),
     SEAT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 좌석을 찾을 수 없습니다."),
     BOOKING_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 예약을 찾을 수 없습니다."),
+    SECTION_SETTING_MISMATCH(HttpStatus.NOT_FOUND, "모든 좌석 템플릿 구역에 대한 가격 설정이 누락되었습니다."),
 
     // 409 Conflict: 충돌
     DUPLICATE_MEMBER_EMAIL(HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다."),

@@ -88,10 +88,69 @@ public class EventService {
             throw new CustomException(ErrorCode.SECTION_SETTING_MISSING);
         }
 
-        CreateEventRequestDto.SectionSetting commonSetting = requestDto.getSeatSettings().get(0);
+        SeatForm seatForm = requestDto.getSeatForm();
 
-        for (SeatTemplate template : templates) {
-            seatsToSave.add(createSeatEntity(savedEvent, template, commonSetting));
+        // 1. 자유좌석 (FREE) 또는 스탠딩 (STANDING)의 경우: 단일 가격 적용, 등급 없음
+        if (seatForm == SeatForm.FREE || seatForm == SeatForm.STANDING) {
+
+            // 필수: 단 하나의 가격 설정만 허용
+            if (requestDto.getSeatSettings().size() != 1) {
+                throw new CustomException(ErrorCode.INVALID_REQUEST);
+            }
+
+            // 호스트가 입력한 단 하나의 가격 설정을 가져옵니다.
+            CreateEventRequestDto.SectionSetting commonSetting = requestDto.getSeatSettings().get(0);
+
+            for (SeatTemplate template : templates) {
+                seatsToSave.add(
+                    Seat.builder()
+                        .event(savedEvent)
+                        .template(template)
+                        // 등급은 null로 설정 (등급 표시 안 함)
+                        .level(null)
+                        // 모든 좌석에 동일한 가격을 적용합니다.
+                        .price(commonSetting.getPrice()) // <--- 이 부분에서 동일한 가격이 설정됩니다.
+                        .status(SeatStatus.AVAILABLE)
+                        .build());
+            }
+
+        }
+        // 2. 지정좌석 (ASSIGNED) 또는 구역별 지정좌석 (SEAT_WITH_SECTION)의 경우: 구역별 등급 및 가격 적용
+        else if (seatForm == SeatForm.ASSIGNED || seatForm == SeatForm.SEAT_WITH_SECTION) {
+
+            // 요청받은 구역별 가격 설정을 Map으로 변환하여 찾기 쉽게 준비 (이전 수정 로직)
+            Map<String, CreateEventRequestDto.SectionSetting> sectionSettingMap =
+                requestDto.getSeatSettings().stream()
+                    .collect(
+                        Collectors.toMap(
+                            CreateEventRequestDto.SectionSetting::getSectionName,
+                            setting -> setting
+                        )
+                    );
+
+            for (SeatTemplate template : templates) {
+                String sectionName = template.getSection();
+
+                CreateEventRequestDto.SectionSetting settingForThisSection =
+                    sectionSettingMap.get(sectionName);
+
+                if (settingForThisSection == null) {
+                    throw new CustomException(ErrorCode.SECTION_SETTING_MISMATCH);
+                }
+
+                // 구역별 등급과 가격 적용
+                seatsToSave.add(
+                    Seat.builder()
+                        .event(savedEvent)
+                        .template(template)
+                        .level(settingForThisSection.getSeatLevel())
+                        .price(settingForThisSection.getPrice())
+                        .status(SeatStatus.AVAILABLE)
+                        .build());
+            }
+        } else {
+            // 정의되지 않은 좌석 형태에 대한 예외 처리
+            throw new CustomException(ErrorCode.INVALID_REQUEST);
         }
 
         seatRepository.saveAll(seatsToSave);

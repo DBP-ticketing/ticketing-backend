@@ -41,7 +41,7 @@ public class Seat extends BaseEntity {
     private SeatTemplate template;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 10)
+    @Column(nullable = true, length = 10)
     private SeatLevel level;
 
     @Column(nullable = false)

@@ -18,12 +18,15 @@ public class SeatResponseDto {
     private SeatStatus status; // 판매 가능 여부
 
     public static SeatResponseDto from(Seat seat) {
+
+        String seatLevelString = seat.getLevel() != null ? seat.getLevel().toString() : "";
+
         return SeatResponseDto.builder()
                 .seatId(seat.getSeatId())
                 .section(seat.getTemplate().getSection())
                 .row(seat.getTemplate().getRow())
                 .col(seat.getTemplate().getColumn())
-                .seatLevel(seat.getLevel().toString())
+                .seatLevel(seatLevelString)
                 .price(seat.getPrice())
                 .status(seat.getStatus())
                 .build();
